@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neuropathy Monitor ??Demo</title>
+  <title>Neuropathy Monitor — Demo</title>
   <style>
     :root{
       --bg:#f6f8fb; --card:#ffffff; --text:#0f172a; --muted:#64748b;
@@ -123,7 +123,7 @@
 (function(){
   function setBoot(msg){
     var el=document.getElementById('app');
-    if(el){ el.innerHTML = '<div class="card"><div class="h2">Loading??/div><div class="small muted">'+msg+'</div></div>'; }
+    if(el){ el.innerHTML = '<div class="card"><div class="h2">Loading…</div><div class="small muted">'+msg+'</div></div>'; }
   }
   window.__demoBoot = { started: Date.now() };
   window.addEventListener('error', function(e){
@@ -136,7 +136,7 @@
         +'</div>';
     }
   });
-  document.addEventListener('DOMContentLoaded', function(){ setBoot('Initializing??); });
+  document.addEventListener('DOMContentLoaded', function(){ setBoot('Initializing…'); });
 })();
 </script>
 
@@ -147,7 +147,7 @@
           <div class="logo"></div>
           <div>
             <div style="font-size:14px">Neuropathy Monitor</div>
-            <div class="langNote" id="subtitle">Patient Demo ??Bilingual (EN/蝜葉)</div>
+            <div class="langNote" id="subtitle">Patient Demo • Bilingual (EN/繁中)</div>
           </div>
         </div>
 
@@ -158,7 +158,7 @@
           </div>
           <div class="seg" aria-label="language switch">
             <button id="langEN" class="active" onclick="setLang('en')">EN</button>
-            <button id="langZH" onclick="setLang('zh')">蝜葉</button>
+            <button id="langZH" onclick="setLang('zh')">繁中</button>
           </div>
           <button class="btn" onclick="resetDemo()">
             <span id="resetLabel">Reset demo</span>
@@ -178,7 +178,7 @@
 -------------------------- */
 const T = {
   en: {
-    subtitle: "Patient Demo ??Bilingual (EN/蝜葉)",
+    subtitle: "Patient Demo • Bilingual (EN/繁中)",
     reset: "Reset demo",
     consentTitle: "Welcome",
     consentBody: "Neuropathy Monitor helps you track numbness/tingling/pain and how it affects daily life during EV or chemotherapy.",
@@ -196,7 +196,7 @@ const T = {
     suggestion: "Suggestion",
     suggGreen: "Keep tracking weekly. Continue safety tips and foot care.",
     suggYellow: "Monitor closely. Consider contacting your care team if symptoms persist or worsen.",
-    suggRed: "Please contact your care team within 24??8 hours for assessment.",
+    suggRed: "Please contact your care team within 24–48 hours for assessment.",
     tipsTitle: "Self-care tips",
     tips: [
       "Use night-lights and keep walkways clear to reduce fall risk.",
@@ -207,8 +207,8 @@ const T = {
     goSummary: "Visit summary",
     checkinTitle: "Weekly Check-in",
     step: "Step",
-    step1: "PNQ ??Sensory",
-    step2: "PNQ ??Motor",
+    step1: "PNQ — Sensory",
+    step2: "PNQ — Motor",
     step3: "Quick scale",
     step4: "Safety",
     step5: "Review",
@@ -233,7 +233,7 @@ const T = {
       "Major difficulty with walking or hand function; needs help or adaptation.",
       "Severe disability due to motor symptoms."
     ],
-    slidersTitle: "Quick symptom scale (0??0)",
+    slidersTitle: "Quick symptom scale (0–10)",
     numb: "Numbness",
     ting: "Tingling",
     pain: "Pain",
@@ -241,7 +241,7 @@ const T = {
     interfereHint: "How much symptoms affect walking, balance, using hands, sleep, etc.",
     safetyTitle: "Safety check",
     fallQ: "Did you fall or almost fall this week?",
-    sleepQ: "Sleep impact (0??0)",
+    sleepQ: "Sleep impact (0–10)",
     yes: "Yes",
     no: "No",
     back: "Back",
@@ -271,103 +271,103 @@ const T = {
     rag: "Risk level",
     pnq: "PNQ",
     notes: "Notes",
-    demoFoot: "Demo only. Replace thresholds, contact info, and consent text with your institution? approved version."
+    demoFoot: "Demo only. Replace thresholds, contact info, and consent text with your institution’s approved version."
   },
   zh: {
-    subtitle: "?犖??Demo ??銝剛??嚗N/蝜葉嚗?,
-    reset: "?蔭 Demo",
-    consentTitle: "甇∟?雿輻",
-    consentBody: "Neuropathy Monitor ??典?亙? EV ???砍?????餈質馱暻餅嚗???潛??撣詨??賢蔣?踴?,
-    consentSafety: "?砍極?琿??交???嚗?銝?靘那?瑟?瘝餌?瘙箇?????湧???蝺亦??殷?隢蝯⊿?????交??嗅蝺仿閰晞?,
-    consentAgree: "??閫?蒂蝜潛?",
-    homeTitle: "擐?",
-    due: "?祇勗??勗??,
-    notDue: "銝活?",
-    startCheckin: "???",
-    quickStatus: "?桀????,
-    lastUpdated: "?湔??",
-    green: "蝬?,
-    yellow: "暺?,
-    red: "蝝?,
-    suggestion: "撱箄降",
-    suggGreen: "蝬剜?瘥梯蕭頩歹???摰?雲?函霅瑯?,
-    suggYellow: "隢???撖??交?蝥??∪?嚗遣霅啗??怎????舐窗??,
-    suggRed: "撱箄降??24??8 撠??扯蝯⊿????隡啜?,
-    tipsTitle: "?芣??扯風撠???,
+    subtitle: "病人版 Demo • 中英雙語（EN/繁中）",
+    reset: "重置 Demo",
+    consentTitle: "歡迎使用",
+    consentBody: "Neuropathy Monitor 協助您在接受 EV 或一般化療期間，追蹤麻木／刺痛／疼痛與日常功能影響。",
+    consentSafety: "本工具非急救服務，也不提供診斷或治療決策。若症狀嚴重或有緊急疑慮，請聯絡醫療團隊或撥打當地緊急電話。",
+    consentAgree: "我了解並繼續",
+    homeTitle: "首頁",
+    due: "本週回報到期",
+    notDue: "下次回報",
+    startCheckin: "開始回報",
+    quickStatus: "目前狀態",
+    lastUpdated: "更新時間",
+    green: "綠",
+    yellow: "黃",
+    red: "紅",
+    suggestion: "建議",
+    suggGreen: "維持每週追蹤，持續安全與足部照護。",
+    suggYellow: "請密切觀察；若持續或惡化，建議與醫療團隊聯絡。",
+    suggRed: "建議於 24–48 小時內聯絡醫療團隊評估。",
+    tipsTitle: "自我照護小提醒",
     tips: [
-      "憭?雿輻撠????粥??蝛箔誑??頝◢?芥?,
-      "蝛踹??喲?镼芯蒂瘥瑼Ｘ頞喲?株???,
-      "?踹??/??亥孛嚗?瞉∪??葫瘞湔澈??
+      "夜間使用小夜燈、保持走道清空以降低跌倒風險。",
+      "穿合腳鞋襪並每日檢查足部皮膚。",
+      "避免過冷/過熱接觸，洗澡前先測水溫。"
     ],
-    goTrends: "?亦?頞典",
-    goSummary: "?閮箸?閬?,
-    checkinTitle: "瘥勗???,
-    step: "甇仿?",
-    step1: "PNQ??閬?,
-    step2: "PNQ??雿?,
-    step3: "敹恍?銵?,
-    step4: "摰瑼Ｘ",
-    step5: "蝣箄??",
-    pnqPromptSensory: "銝??芯??交?蝚血??冽?梁??死??嚗獄???箇?/?潛?嚗?",
-    pnqPromptMotor: "銝??芯??交?蝚血??冽?梁???/銵粥??嚗?,
-    pnqA: "A. ??,
-    pnqB: "B. 頛凝嚗?敶梢?暑",
-    pnqC: "C. 銝剔?嚗蔣?輸?暑??,
-    pnqD: "D. ?＊嚗蔣?踵撣詨???,
-    pnqE: "E. ?湧?嚗瘜迤撣豢暑??,
+    goTrends: "查看趨勢",
+    goSummary: "門診摘要",
+    checkinTitle: "每週回報",
+    step: "步驟",
+    step1: "PNQ—感覺",
+    step2: "PNQ—動作",
+    step3: "快速量表",
+    step4: "安全檢查",
+    step5: "確認送出",
+    pnqPromptSensory: "下列哪一句最符合您本週的感覺症狀（麻木/刺痛/疼痛）？",
+    pnqPromptMotor: "下列哪一句最符合您本週的動作/行走症狀？",
+    pnqA: "A. 無",
+    pnqB: "B. 輕微，不影響生活",
+    pnqC: "C. 中等，影響部分活動",
+    pnqD: "D. 明顯，影響日常功能",
+    pnqE: "E. 嚴重，無法正常活動",
     pnqSensorySub: [
-      "瘝?暻餅嚗???潛???,
-      "??頛凝嚗??臬?撟喳虜瘣餃???,
-      "?典?瘣餃?霈?頛???憒蝑瑕??粥頛?嚗?,
-      "???＊??亙虜撌乩???,
-      "?湧??嚗瘜??像撣豢暑??
+      "沒有麻木／刺痛／疼痛。",
+      "症狀輕微，仍可做平常活動。",
+      "部分活動變得較困難（如拿筷子、走較久）。",
+      "症狀明顯限制日常工作。",
+      "嚴重限制，無法完成平常活動。"
     ],
     pnqMotorSub: [
-      "瘝??∪???雿???,
-      "蝔凝蝚冽?嚗?隞甇?虜瘣餃???,
-      "蝎曄敦???粥頝航??圈嚗?暑????,
-      "韏啗楝???典??賣?憿臬????閬??拇?隤踵??,
-      "???????湧?憭梯??
+      "沒有無力或動作困難。",
+      "稍微笨拙，但仍可正常活動。",
+      "精細動作或走路變困難，部分活動受限。",
+      "走路或手部功能明顯困難，需要協助或調整。",
+      "動作症狀造成嚴重失能。"
     ],
-    slidersTitle: "敹恍???”嚗???0嚗?,
-    numb: "暻餅",
-    ting: "?箇?",
-    pain: "?潛?",
-    interfere: "?亙虜敶梢",
-    interfereHint: "??撠粥頝胯像銵～??其蝙?具??敶梢蝔漲",
-    safetyTitle: "摰瑼Ｘ",
-    fallQ: "?祇望?西???撌桅?頝?",
-    sleepQ: "?∠?敶梢嚗???0嚗?,
-    yes: "??,
-    no: "??,
-    back: "餈?",
-    next: "銝?甇?,
-    submit: "?",
-    reviewTitle: "蝣箄??函??",
-    resultTitle: "?蝯?",
-    why: "?文???",
-    contact: "?舐窗?怎???",
-    office: "?閮箸???,
-    contactHint: "甇?Demo 雿輻蝷箸??舐窗鞈???,
-    trendsTitle: "頞典嚗? 8 ?梧?",
-    legend: "?嚗獄???箇?/?潛?/敶梢",
-    summaryTitle: "?閮箸?閬?,
-    summaryNote: "?那?撠迨??蝯阡撣急?霅瑞?撣怠???,
-    export: "銴ˊ????",
-    copied: "撌脰?鋆?,
-    careTitle: "?扯風蝡臬?銵冽嚗emo嚗?,
-    careSub: "??霅瑞?撣??怠葦敹恍??⊥??勗??梯?霅衣內??,
-    patients: "?犖皜",
-    alerts: "霅衣內",
-    overdue: "?暹??芸???,
-    worsening: "敹恍??,
-    view: "?亦?",
-    patientDetail: "?犖?敦",
-    lastCheckin: "?餈???,
-    rag: "憸券??",
+    slidersTitle: "快速症狀量表（0–10）",
+    numb: "麻木",
+    ting: "刺痛",
+    pain: "疼痛",
+    interfere: "日常影響",
+    interfereHint: "症狀對走路、平衡、手部使用、睡眠等影響程度",
+    safetyTitle: "安全檢查",
+    fallQ: "本週是否跌倒或差點跌倒？",
+    sleepQ: "睡眠影響（0–10）",
+    yes: "是",
+    no: "否",
+    back: "返回",
+    next: "下一步",
+    submit: "送出",
+    reviewTitle: "確認您的回報",
+    resultTitle: "回報結果",
+    why: "判定原因",
+    contact: "聯絡醫療團隊",
+    office: "門診時間",
+    contactHint: "此 Demo 使用示意聯絡資訊。",
+    trendsTitle: "趨勢（近 8 週）",
+    legend: "分數：麻木/刺痛/疼痛/影響",
+    summaryTitle: "門診摘要",
+    summaryNote: "回診時可將此摘要給醫師或護理師參考。",
+    export: "複製摘要文字",
+    copied: "已複製",
+    careTitle: "照護端儀表板（Demo）",
+    careSub: "提供護理師/醫師快速掌握每週回報與警示。",
+    patients: "病人清單",
+    alerts: "警示",
+    overdue: "逾期未回報",
+    worsening: "快速惡化",
+    view: "查看",
+    patientDetail: "病人明細",
+    lastCheckin: "最近回報",
+    rag: "風險分級",
     pnq: "PNQ",
-    notes: "?酉",
-    demoFoot: "??Demo?祕??蝺?靘?扳???祈矽?湧?瑼颯蝯∟?閮????豢?摮?
+    notes: "備註",
+    demoFoot: "僅 Demo。實際上線請依院內核准版本調整門檻、聯絡資訊與同意書文字。"
   }
 };
 
@@ -417,7 +417,7 @@ function seedState(){
     draft: { pnqSensory:null, pnqMotor:null, numb:2, ting:2, pain:2, impact:2, fall:false, sleep:2 },
     checkinStep:1,
     care: {
-      contacts: { phone:"+886-2-0000-0000", line:"@careteam-demo", office:"Mon?ri 09:00??7:00" },
+      contacts: { phone:"+886-2-0000-0000", line:"@careteam-demo", office:"Mon–Fri 09:00–17:00" },
       patients: [
         { id:"P-1027", name:"Patient A", therapy:"EV", rag:"yellow", last: weeks[weeks.length-1].date },
         { id:"P-2044", name:"Patient B", therapy:"Taxane", rag:"green", last: weeks[weeks.length-2].date },
@@ -506,31 +506,31 @@ function computeRAG(entry, prev){
   );
 
   if(red){
-    if(entry.pain>=7) reasons.push("pain ??7");
-    if(entry.numb>=8) reasons.push("numbness ??8");
-    if(entry.ting>=8) reasons.push("tingling ??8");
-    if(entry.impact>=6) reasons.push("impact ??6");
+    if(entry.pain>=7) reasons.push("pain ≥ 7");
+    if(entry.numb>=8) reasons.push("numbness ≥ 8");
+    if(entry.ting>=8) reasons.push("tingling ≥ 8");
+    if(entry.impact>=6) reasons.push("impact ≥ 6");
     if(entry.fall) reasons.push("fall / near-fall");
     if(prev){
-      if(entry.pain-prev.pain>=3) reasons.push("pain ????3");
-      if(entry.numb-prev.numb>=3) reasons.push("numbness ????3");
-      if(entry.ting-prev.ting>=3) reasons.push("tingling ????3");
-      if(entry.impact-prev.impact>=3) reasons.push("impact ????3");
+      if(entry.pain-prev.pain>=3) reasons.push("pain ↑ ≥ 3");
+      if(entry.numb-prev.numb>=3) reasons.push("numbness ↑ ≥ 3");
+      if(entry.ting-prev.ting>=3) reasons.push("tingling ↑ ≥ 3");
+      if(entry.impact-prev.impact>=3) reasons.push("impact ↑ ≥ 3");
     }
     if(["D","E"].includes(entry.pnqSensory)) reasons.push("PNQ sensory D/E");
     if(["D","E"].includes(entry.pnqMotor)) reasons.push("PNQ motor D/E");
     return { rag:"red", reasons };
   }
   if(yellow){
-    if(entry.pain>=4) reasons.push("pain ??4");
-    if(entry.numb>=4) reasons.push("numbness ??4");
-    if(entry.ting>=4) reasons.push("tingling ??4");
-    if(entry.impact>=4) reasons.push("impact ??4");
+    if(entry.pain>=4) reasons.push("pain ≥ 4");
+    if(entry.numb>=4) reasons.push("numbness ≥ 4");
+    if(entry.ting>=4) reasons.push("tingling ≥ 4");
+    if(entry.impact>=4) reasons.push("impact ≥ 4");
     if(prev){
-      if(entry.pain-prev.pain>=2) reasons.push("pain ????2");
-      if(entry.numb-prev.numb>=2) reasons.push("numbness ????2");
-      if(entry.ting-prev.ting>=2) reasons.push("tingling ????2");
-      if(entry.impact-prev.impact>=2) reasons.push("impact ????2");
+      if(entry.pain-prev.pain>=2) reasons.push("pain ↑ ≥ 2");
+      if(entry.numb-prev.numb>=2) reasons.push("numbness ↑ ≥ 2");
+      if(entry.ting-prev.ting>=2) reasons.push("tingling ↑ ≥ 2");
+      if(entry.impact-prev.impact>=2) reasons.push("impact ↑ ≥ 2");
     }
     if(entry.pnqSensory==="C") reasons.push("PNQ sensory C");
     if(entry.pnqMotor==="C") reasons.push("PNQ motor C");
@@ -601,15 +601,15 @@ function screenConsent(){
     <div class="card">
       <h2>What you can click in this demo</h2>
       <p class="small">
-        ??Weekly check-in with PNQ (sensory + motor)<br/>
-        ??Green/Yellow/Red result + simple suggestions<br/>
-        ??Trends chart (local demo data)<br/>
-        ??Visit summary (copy text)<br/>
-        ??Care Web dashboard tab
+        • Weekly check-in with PNQ (sensory + motor)<br/>
+        • Green/Yellow/Red result + simple suggestions<br/>
+        • Trends chart (local demo data)<br/>
+        • Visit summary (copy text)<br/>
+        • Care Web dashboard tab
       </p>
       <div class="divider"></div>
       <p class="small muted">
-        Tip: Use the <b>EN/蝜葉</b> toggle on top.
+        Tip: Use the <b>EN/繁中</b> toggle on top.
       </p>
     </div>
   </div>`;
@@ -631,7 +631,7 @@ function screenHome(){
       <h1>${t.homeTitle}</h1>
       <div class="kpi" style="margin-top:10px">
         <div class="mini">
-          <div class="v">${due ? "?? : "??} ${due ? t.due : t.notDue}</div>
+          <div class="v">${due ? "✅" : "⏳"} ${due ? t.due : t.notDue}</div>
           <div class="l">${fmtDate(new Date().toISOString())}</div>
         </div>
         <div class="mini">
@@ -727,7 +727,7 @@ function screenCheckin(){
       </p>
       <div class="divider"></div>
       <p class="small muted">
-        Note: A real product should use your institution? validated wording and approved translation.
+        Note: A real product should use your institution’s validated wording and approved translation.
       </p>
       <div class="footerNote">${t.demoFoot}</div>
     </div>
@@ -823,8 +823,8 @@ function stepReview(){
       <div class="divider"></div>
       <div class="item">
         <div class="left">
-          <div class="title">${t.pnq} ??Sensory: ${d.pnqSensory || "-"}</div>
-          <div class="sub">${t.pnq} ??Motor: ${d.pnqMotor || "-"}</div>
+          <div class="title">${t.pnq} — Sensory: ${d.pnqSensory || "-"}</div>
+          <div class="sub">${t.pnq} — Motor: ${d.pnqMotor || "-"}</div>
         </div>
         ${ragBadge(preview.rag)}
       </div>
@@ -850,8 +850,8 @@ function setDraft(key,val){
 
 function nextStep(){
   // basic validation for PNQ steps
-  if(checkinStep===1 && !state.draft.pnqSensory){ toast(lang==="zh" ? "隢???PNQ ?死?賊?" : "Please select PNQ sensory option"); return; }
-  if(checkinStep===2 && !state.draft.pnqMotor){ toast(lang==="zh" ? "隢???PNQ ???賊?" : "Please select PNQ motor option"); return; }
+  if(checkinStep===1 && !state.draft.pnqSensory){ toast(lang==="zh" ? "請先選 PNQ 感覺選項" : "Please select PNQ sensory option"); return; }
+  if(checkinStep===2 && !state.draft.pnqMotor){ toast(lang==="zh" ? "請先選 PNQ 動作選項" : "Please select PNQ motor option"); return; }
   checkinStep = Math.min(5, checkinStep+1);
   saveState(); render();
 }
@@ -1026,8 +1026,8 @@ function screenTrends(){
         ${state.weeks.slice().reverse().slice(0,4).map(w=>`
           <div class="item">
             <div class="left">
-              <div class="title">${fmtDate(w.date)} ??${ragLabel(w.rag)}</div>
-              <div class="sub">PNQ S:${w.pnqSensory || "-"} / M:${w.pnqMotor || "-"} ??N:${w.numb} T:${w.ting} P:${w.pain} I:${w.impact}</div>
+              <div class="title">${fmtDate(w.date)} • ${ragLabel(w.rag)}</div>
+              <div class="sub">PNQ S:${w.pnqSensory || "-"} / M:${w.pnqMotor || "-"} • N:${w.numb} T:${w.ting} P:${w.pain} I:${w.impact}</div>
             </div>
             <div class="chip ${w.rag==='green'?'ok':w.rag==='yellow'?'warn':'bad'}">${ragLabel(w.rag)}</div>
           </div>`).join("")}
@@ -1046,12 +1046,12 @@ function buildSummaryText(){
   } : null;
 
   const lines = [];
-  lines.push(`Neuropathy Monitor ??Visit Summary`);
+  lines.push(`Neuropathy Monitor — Visit Summary`);
   lines.push(`Date: ${fmtDate(last.date)}`);
   lines.push(`Therapy: ${state.profile.therapy}`);
   lines.push(`Risk level: ${ragLabel(last.rag)}`);
   lines.push(`PNQ: Sensory ${last.pnqSensory || "-"}, Motor ${last.pnqMotor || "-"}`);
-  lines.push(`Scores (0??0): Numbness ${last.numb}, Tingling ${last.ting}, Pain ${last.pain}, Impact ${last.impact}`);
+  lines.push(`Scores (0–10): Numbness ${last.numb}, Tingling ${last.ting}, Pain ${last.pain}, Impact ${last.impact}`);
   if(delta){
     lines.push(`Change vs last week: N ${fmtSigned(delta.numb)} / T ${fmtSigned(delta.ting)} / P ${fmtSigned(delta.pain)} / I ${fmtSigned(delta.impact)}`);
   }
@@ -1123,8 +1123,8 @@ function screenCare(){
         ${patients.map(p=>`
           <div class="item">
             <div class="left">
-              <div class="title">${p.id} ??${p.name}</div>
-              <div class="sub">${p.therapy} ??${t.lastCheckin}: ${fmtDate(p.last)}</div>
+              <div class="title">${p.id} • ${p.name}</div>
+              <div class="sub">${p.therapy} • ${t.lastCheckin}: ${fmtDate(p.last)}</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center">
               <div class="chip ${p.rag==='green'?'ok':p.rag==='yellow'?'warn':'bad'}">${ragLabel(p.rag)}</div>
@@ -1176,7 +1176,7 @@ function shortcutsBar(){
   return `
     <div class="shortcuts">
       <div class="left">
-        <div class="label">Demo shortcuts / 敹恍?閬?/div>
+        <div class="label">Demo shortcuts / 快速導覽</div>
         <button class="btn small" onclick="goto('consent')">1 Consent</button>
         <button class="btn small" onclick="goto('home')">2 Home</button>
         <button class="btn small" onclick="startCheckin()">3 Check-in</button>
@@ -1184,7 +1184,7 @@ function shortcutsBar(){
         <button class="btn small" onclick="goto('trends')">5 Trends</button>
         <button class="btn small" onclick="goto('summary')">6 Summary</button>
       </div>
-      <div class="small muted">Tip: Home ???tart check-in??to see the full flow.</div>
+      <div class="small muted">Tip: Home → “Start check-in” to see the full flow.</div>
     </div>
   `;
 }

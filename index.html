@@ -117,6 +117,29 @@
   </style>
 </head>
 <body>
+
+<script>
+/* Demo boot diagnostics */
+(function(){
+  function setBoot(msg){
+    var el=document.getElementById('app');
+    if(el){ el.innerHTML = '<div class="card"><div class="h2">Loading…</div><div class="small muted">'+msg+'</div></div>'; }
+  }
+  window.__demoBoot = { started: Date.now() };
+  window.addEventListener('error', function(e){
+    var el=document.getElementById('app');
+    if(el){
+      el.innerHTML = '<div class="card"><div class="h2">Demo script error</div>'
+        +'<div class="small muted">Your browser blocked or errored while running the demo JavaScript.</div>'
+        +'<div class="small" style="margin-top:10px;white-space:pre-wrap;">'+(e.message||e.error||'')+'</div>'
+        +'<div class="small muted" style="margin-top:10px;">Try: Incognito window (disable extensions), or another browser.</div>'
+        +'</div>';
+    }
+  });
+  document.addEventListener('DOMContentLoaded', function(){ setBoot('Initializing…'); });
+})();
+</script>
+
   <div class="topbar">
     <div class="wrap">
       <div class="row">
@@ -1188,7 +1211,7 @@ function render(){
   else app.innerHTML = shortcutsBar() + screenHome()
 }
 
-render();
+document.addEventListener('DOMContentLoaded', function(){ try{ render(); }catch(e){ throw e; } });
 </script>
 </body>
 </html>

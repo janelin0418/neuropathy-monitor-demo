@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neuropathy Monitor — Demo</title>
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+      --primary:#2563eb; --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
+      --border:#e2e8f0; --shadow:0 8px 24px rgba(15,23,42,.08);
+      --radius:18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--font); color:var(--text); background:var(--bg);}
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      background:rgba(246,248,251,.9); backdrop-filter:saturate(180%) blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:1050px; margin:0 auto; padding:16px;}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700;}
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background:linear-gradient(135deg, #60a5fa, #34d399);
+      box-shadow:var(--shadow);
+    }
+    .pill{border:1px solid var(--border); background:var(--card); padding:8px 10px; border-radius:999px; display:flex; gap:8px; align-items:center;}
+    .btn{
+      border:1px solid var(--border); background:var(--card); color:var(--text);
+      padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600;
+    }
+    .btn.primary{background:var(--primary); color:#fff; border-color:transparent;}
+    .btn.ghost{background:transparent;}
+    .btn:active{transform:translateY(1px)}
+    .seg{display:flex; border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--card);}
+    .seg button{border:0; background:transparent; padding:10px 12px; cursor:pointer; font-weight:700; color:var(--muted);}
+    .seg button.active{background:rgba(37,99,235,.12); color:var(--primary);}
+    .grid{display:grid; gap:14px; grid-template-columns: 1.1fr .9fr;}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr;} }
+
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:16px;
+    }
+    h1{font-size:22px; margin:0 0 8px;}
+    h2{font-size:16px; margin:0 0 10px;}
+    p{margin:8px 0; color:var(--muted); line-height:1.45;}
+    .muted{color:var(--muted)}
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; font-weight:800; font-size:12px;}
+    .badge.ok{background:rgba(22,163,74,.12); color:var(--ok);}
+    .badge.warn{background:rgba(245,158,11,.14); color:var(--warn);}
+    .badge.bad{background:rgba(239,68,68,.14); color:var(--bad);}
+    .kpi{display:flex; gap:10px; flex-wrap:wrap;}
+    .kpi .mini{flex:1; min-width:160px; border:1px solid var(--border); border-radius:16px; padding:12px; background:linear-gradient(180deg, #fff, #fbfdff);}
+    .mini .v{font-size:18px; font-weight:900;}
+    .mini .l{font-size:12px; color:var(--muted); margin-top:2px;}
+    .divider{height:1px; background:var(--border); margin:12px 0;}
+    .list{display:flex; flex-direction:column; gap:10px;}
+    .item{border:1px solid var(--border); border-radius:16px; padding:12px; display:flex; justify-content:space-between; gap:10px; background:#fff;}
+    .item .left{display:flex; flex-direction:column; gap:4px;}
+    .item .title{font-weight:800;}
+    .item .sub{color:var(--muted); font-size:12px;}
+    .chip{font-size:12px; font-weight:800; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#fff;}
+    .chip.ok{border-color:rgba(22,163,74,.25); color:var(--ok);}
+    .chip.warn{border-color:rgba(245,158,11,.35); color:var(--warn);}
+    .chip.bad{border-color:rgba(239,68,68,.35); color:var(--bad);}
+    .chip.gray{color:var(--muted);}
+
+    .form{display:flex; flex-direction:column; gap:12px;}
+    .field{border:1px solid var(--border); border-radius:16px; padding:12px;}
+    .field label{font-weight:800; font-size:13px;}
+    .field .hint{font-size:12px; color:var(--muted); margin-top:4px;}
+    .sliderRow{display:flex; align-items:center; gap:10px; margin-top:10px;}
+    input[type="range"]{width:100%;}
+    .val{min-width:44px; text-align:right; font-weight:900;}
+    .choices{display:grid; gap:10px; grid-template-columns:1fr;}
+    .choice{
+      border:1px solid var(--border); border-radius:16px; padding:12px; cursor:pointer; background:#fff;
+      display:flex; justify-content:space-between; gap:12px;
+    }
+    .choice.selected{border-color:rgba(37,99,235,.35); background:rgba(37,99,235,.06);}
+    .choice .cTitle{font-weight:900;}
+    .choice .cSub{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.35;}
+    .stepper{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    .dot{width:10px; height:10px; border-radius:999px; background:var(--border);}
+    .dot.on{background:var(--primary);}
+    .row2{display:flex; gap:10px; flex-wrap:wrap;}
+    .row2 .btn{flex:1; min-width:140px;}
+    .toast{
+      position:fixed; right:14px; bottom:14px; max-width:360px;
+      background:#0b1220; color:#fff; border-radius:16px; padding:12px 14px; box-shadow:var(--shadow);
+      display:none;
+    }
+    canvas{width:100%; height:220px; border-radius:16px; border:1px solid var(--border); background:#fff;}
+    .small{font-size:12px;}
+    .langNote{font-size:12px; color:var(--muted);}
+
+    .footerNote{
+      margin-top:14px; font-size:12px; color:var(--muted); line-height:1.4;
+      border-left:3px solid rgba(37,99,235,.3); padding-left:10px;
+    }
+    a{color:var(--primary); text-decoration:none;}
+    a:hover{text-decoration:underline;}
+  
+    .shortcuts{
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:10px; box-shadow:var(--shadow); margin:12px 0 14px;
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+    }
+    .shortcuts .left{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .shortcuts .label{font-weight:900; font-size:12px; color:var(--muted);}
+    .btn.small{padding:8px 10px; border-radius:12px; font-size:12px;}
+
+  </style>
+</head>
+<body>
+
+<script>
+/* Demo boot diagnostics */
+(function(){
+  function setBoot(msg){
+    var el=document.getElementById('app');
+    if(el){ el.innerHTML = '<div class="card"><div class="h2">Loading…</div><div class="small muted">'+msg+'</div></div>'; }
+  }
+  window.__demoBoot = { started: Date.now() };
+  window.addEventListener('error', function(e){
+    var el=document.getElementById('app');
+    if(el){
+      el.innerHTML = '<div class="card"><div class="h2">Demo script error</div>'
+        +'<div class="small muted">Your browser blocked or errored while running the demo JavaScript.</div>'
+        +'<div class="small" style="margin-top:10px;white-space:pre-wrap;">'+(e.message||e.error||'')+'</div>'
+        +'<div class="small muted" style="margin-top:10px;">Try: Incognito window (disable extensions), or another browser.</div>'
+        +'</div>';
+    }
+  });
+  function startupSelfCheck(){
+  const errs=[];
+  try{
+    if(!window.T) errs.push("T (translations) missing");
+    if(!window.state) errs.push("state missing");
+    if(!Array.isArray(state.weeks)) errs.push("state.weeks not array");
+    ["render","goto","exportCSV","exportPDF","drawTrends"].forEach(fn=>{
+      if(typeof window[fn] !== "function") errs.push(`Function missing: ${fn}()`);
+    });
+  }catch(e){
+    errs.push("Self-check exception: "+String(e));
+  }
+  if(errs.length){
+    const box=document.createElement("div");
+    box.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;border-radius:12px;padding:12px;font:12px/1.4 system-ui;white-space:pre-wrap;";
+    box.textContent="Startup self-check failed:\\n- "+errs.join("\\n- ");
+    document.body.appendChild(box);
+    console.error("Startup self-check failed", errs);
+    return false;
+  }
+  return true;
+}
+
+document.addEventListener('DOMContentLoaded', function(){ setBoot('Initializing…'); });
+})();
+</script>
+
+  <div class="topbar">
+    <div class="wrap">
+      <div class="row">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <div style="font-size:14px">Neuropathy Monitor</div>
+            <div class="langNote" id="subtitle">Patient Demo • Bilingual (EN/繁中)</div>
+          </div>
+        </div>
+
+        <div class="row" style="gap:10px">
+          <div class="seg" aria-label="mode switch">
+            <button id="modePatient" class="active" onclick="setMode('patient')">Patient App</button>
+            <button id="modeCare" onclick="setMode('care')">Care Web</button>
+          </div>
+          <div class="seg" aria-label="language switch">
+            <button id="langEN" class="active" onclick="setLang('en')">EN</button>
+            <button id="langZH" onclick="setLang('zh')">繁中</button>
+          </div>
+          <button class="btn" onclick="resetDemo()">
+            <span id="resetLabel">Reset demo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="app"></div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* -------------------------
+   Simple bilingual strings
+-------------------------- */
+const T = {
+  en: {    legendTitle:"Legend",
+    pickOne:"Pick one option.",
+    demoHelpTip:"Tip: Use the EN/繁中 toggle on top.",
+    demoHelpBullets:"• Weekly check-in with PNQ (sensory + motor)\n• Green/Yellow/Red result + simple suggestions\n• Trends chart (local demo data)\n• Self-assessment summary (copy text)\n• Care Web dashboard tab",
+    demoHelpTitle:"What you can click in this demo",
+
+    subtitle: "Patient Demo • Bilingual (EN/繁中)",
+    reset: "Reset demo",
+    consentTitle: "Welcome",
+    consentBody: "Neuropathy Monitor helps you track numbness/tingling/pain and how it affects daily life during EV or chemotherapy.",
+    consentSafety: "This is NOT an emergency service and does NOT provide diagnosis or treatment decisions. If you have severe symptoms or urgent concerns, contact your care team or local emergency services.",
+    consentAgree: "I understand & continue",
+    homeTitle: "Home",
+    due: "Weekly check-in is due",
+    notDue: "Next check-in",
+    startCheckin: "Start check-in",
+    quickStatus: "Your current status",
+    lastUpdated: "Last updated",
+    green: "Green",
+    yellow: "Yellow",
+    red: "Red",
+    suggestion: "Suggestion",
+    suggGreen: "Keep tracking weekly. Continue safety tips and foot care.",
+    suggYellow: "Monitor closely. Consider contacting your care team if symptoms persist or worsen.",
+    suggRed: "Please contact your care team within 24–48 hours for assessment.",
+    tipsTitle: "Self-care tips",
+    tips: [
+      "Use night-lights and keep walkways clear to reduce fall risk.",
+      "Wear well-fitted footwear and inspect feet daily.",
+      "Avoid very hot/cold surfaces; check bath water temperature."
+    ],
+        navConsent:"Consent",
+    navHome:"Home",
+    navCheckin:"Weekly Check-in",
+    navResult:"Risk Result",
+    navTrends:"Trends",
+    navSummary:"Self-Assessment Summary",
+goTrends: "View trends",
+    goSummary: "Visit summary",
+    checkinTitle: "Weekly Check-in",
+    step: "Step",
+    step1: "PNQ — Sensory",
+    step2: "PNQ — Motor",
+    step3: "Quick scale",
+    step4: "Safety",
+    step5: "Review",
+    pnqPromptSensory: "Which statement best matches your sensory symptoms (numbness/tingling/pain)?",
+    pnqPromptMotor: "Which statement best matches your motor / movement symptoms?",
+    pnqA: "A. None",
+    pnqB: "B. Mild, does not affect daily life",
+    pnqC: "C. Moderate, affects some activities",
+    pnqD: "D. Significant, affects daily function",
+    pnqE: "E. Severe, cannot do normal activities",
+    pnqSensorySub: [
+      "No numbness/tingling/pain.",
+      "Mild symptoms, you can do usual activities.",
+      "Symptoms make some activities harder (e.g., using chopsticks, walking longer).",
+      "Symptoms clearly limit daily tasks.",
+      "Severe limitation; you cannot do normal tasks."
+    ],
+    pnqMotorSub: [
+      "No weakness or movement difficulty.",
+      "Slight clumsiness; still able to function normally.",
+      "Noticeable difficulty with fine motor or walking; some activity limitation.",
+      "Major difficulty with walking or hand function; needs help or adaptation.",
+      "Severe disability due to motor symptoms."
+    ],
+    slidersTitle: "Quick symptom scale (0–10)",
+    numb: "Numbness",
+    ting: "Tingling",
+    pain: "Pain",
+    interfere: "Daily life impact",
+    interfereHint: "How much symptoms affect walking, balance, using hands, sleep, etc.",
+    safetyTitle: "Safety check",
+    fallQ: "Did you fall or almost fall this week?",
+    sleepQ: "Sleep impact (0–10)",
+    yes: "Yes",
+    no: "No",
+    back: "Back",
+    next: "Next",
+    submit: "Submit",
+    reviewTitle: "Review your answers",
+    resultTitle: "Your result",
+    why: "Why this level",
+    contact: "Contact your care team",
+    office: "Office hours",
+    contactHint: "This demo uses placeholder contact info.",
+    trendsTitle: "Trends (last 8 weeks)",
+    legend: "Scores: numbness/tingling/pain/impact",
+    summaryTitle: "Visit summary",
+    summaryNote: "Show this summary to your doctor or nurse at the next visit.",
+    export: "Copy This Assessment Summary text",
+    copied: "Copied",
+    careTitle: "Care Dashboard (Demo)",
+    careSub: "A simple web view for nurses/physicians to monitor weekly reports.",
+    patients: "Patients",
+    alerts: "Alerts",
+    overdue: "Overdue",
+    worsening: "Worsening",
+    view: "View",
+    patientDetail: "Patient detail",
+    lastCheckin: "Last check-in",
+    rag: "Risk level",
+    pnq: "PNQ",
+    notes: "Notes",
+        lblDate:"Date",
+    lblTherapy:"Therapy",
+    lblRiskLevel:"Risk level",
+    lblPNQ:"PNQ",
+    lblScores:"Scores (0–10)",
+    lblChange:"Change vs last week",
+    lblFall:"Fall/near-fall",
+    lblSleep:"Sleep impact",
+    lblReasons:"Reasons",
+    lblNote:"Note",
+    noteText:"This tool is for monitoring; clinical assessment is required for medical decisions.",
+    axisY:"Severity (0–10)",
+    riskStable:"stable",
+    riskMild:"mild",
+    riskStableMild:"stable / mild",
+demoFoot: "Demo only. Replace thresholds, contact info, and consent text with your institution’s approved version.",
+    visitDate:"Visit date",
+    dateHint:"以本地日期保存（YYYY-MM-DD）。",
+    exportCSV:"Trend Data Export (CSV)",
+    exportPDF:"Download Assessment & Trend Data (PDF)",
+    exportCopy:"Copy This Assessment Summary",
+    exportPDFPrint:"Print Assessment & Trend Data (PDF)"
+},
+  zh: {    lgImpact:"影響日常",
+    lgPain:"疼痛",
+    lgTing:"刺痛/麻刺",
+    lgNumb:"麻木",
+    legendTitle:"圖例",
+    pickOne:"請選擇一個選項。",
+    demoHelpTip:"提示：可用上方 EN/繁中 切換語言。",
+    demoHelpBullets:"• 每週症狀回報（含 PNQ：感覺＋運動）\n• 綠/黃/紅 風險結果＋簡易建議\n• 趨勢圖（本機示範資料）\n• 自我評估摘要（可複製文字）\n• 照護端 Web 儀表板頁籤",
+    demoHelpTitle:"此 Demo 可點擊內容",
+
+    subtitle: "病人版 Demo • 中英雙語（EN/繁中）",
+    reset: "重置 Demo",
+    consentTitle: "歡迎使用",
+    consentBody: "Neuropathy Monitor 協助您在接受 EV 或一般化療期間，追蹤麻木／刺痛／疼痛與日常功能影響。",
+    consentSafety: "本工具非急救服務，也不提供診斷或治療決策。若症狀嚴重或有緊急疑慮，請聯絡醫療團隊或撥打當地緊急電話。",
+    consentAgree: "我了解並繼續",
+    homeTitle: "首頁",
+    due: "本週回報到期",
+    notDue: "下次回報",
+    startCheckin: "開始回報",
+    quickStatus: "目前狀態",
+    lastUpdated: "更新時間",
+    green: "綠",
+    yellow: "黃",
+    red: "紅",
+    suggestion: "建議",
+    suggGreen: "維持每週追蹤，持續安全與足部照護。",
+    suggYellow: "請密切觀察；若持續或惡化，建議與醫療團隊聯絡。",
+    suggRed: "建議於 24–48 小時內聯絡醫療團隊評估。",
+    tipsTitle: "自我照護小提醒",
+    tips: [
+      "夜間使用小夜燈、保持走道清空以降低跌倒風險。",
+      "穿合腳鞋襪並每日檢查足部皮膚。",
+      "避免過冷/過熱接觸，洗澡前先測水溫。"
+    ],
+        navConsent:"同意說明",
+    navHome:"首頁",
+    navCheckin:"每週症狀回報",
+    navResult:"風險結果",
+    navTrends:"趨勢",
+    navSummary:"自我評估摘要",
+goTrends: "查看趨勢",
+    goSummary: "自我評估摘要",
+    checkinTitle: "每週回報",
+    step: "步驟",
+    step1: "PNQ—感覺",
+    step2: "PNQ—動作",
+    step3: "快速量表",
+    step4: "安全檢查",
+    step5: "確認送出",
+    pnqPromptSensory: "下列哪一句最符合您本週的感覺症狀（麻木/刺痛/疼痛）？",
+    pnqPromptMotor: "下列哪一句最符合您本週的動作/行走症狀？",
+    pnqA: "A. 無",
+    pnqB: "B. 輕微，不影響生活",
+    pnqC: "C. 中等，影響部分活動",
+    pnqD: "D. 明顯，影響日常功能",
+    pnqE: "E. 嚴重，無法正常活動",
+    pnqSensorySub: [
+      "沒有麻木／刺痛／疼痛。",
+      "症狀輕微，仍可做平常活動。",
+      "部分活動變得較困難（如拿筷子、走較久）。",
+      "症狀明顯限制日常工作。",
+      "嚴重限制，無法完成平常活動。"
+    ],
+    pnqMotorSub: [
+      "沒有無力或動作困難。",
+      "稍微笨拙，但仍可正常活動。",
+      "精細動作或走路變困難，部分活動受限。",
+      "走路或手部功能明顯困難，需要協助或調整。",
+      "動作症狀造成嚴重失能。"
+    ],
+    slidersTitle: "快速症狀量表（0–10）",
+    numb: "麻木",
+    ting: "刺痛",
+    pain: "疼痛",
+    interfere: "日常影響",
+    interfereHint: "症狀對走路、平衡、手部使用、睡眠等影響程度",
+    safetyTitle: "安全檢查",
+    fallQ: "本週是否跌倒或差點跌倒？",
+    sleepQ: "睡眠影響（0–10）",
+    yes: "是",
+    no: "否",
+    back: "返回",
+    next: "下一步",
+    submit: "送出",
+    reviewTitle: "確認您的回報",
+    resultTitle: "回報結果",
+    why: "判定原因",
+    contact: "聯絡醫療團隊",
+    office: "門診時間",
+    contactHint: "此 Demo 使用示意聯絡資訊。",
+    trendsTitle: "趨勢（近 8 週）",
+    legend: "分數：麻木/刺痛/疼痛/影響",
+    summaryTitle: "自我評估摘要",
+    summaryNote: "回診時可將此摘要給醫師或護理師參考。",
+    export: "複製此次評估摘要文字",
+    copied: "已複製",
+    careTitle: "照護端儀表板（Demo）",
+    careSub: "提供護理師/醫師快速掌握每週回報與警示。",
+    patients: "病人清單",
+    alerts: "警示",
+    overdue: "逾期未回報",
+    worsening: "快速惡化",
+    view: "查看",
+    patientDetail: "病人明細",
+    lastCheckin: "最近回報",
+    rag: "風險分級",
+    pnq: "PNQ",
+    notes: "備註",
+        lblDate:"日期",
+    lblTherapy:"治療",
+    lblRiskLevel:"風險等級",
+    lblPNQ:"PNQ",
+    lblScores:"分數（0–10）",
+    lblChange:"與上週相比",
+    lblFall:"跌倒/差點跌倒",
+    lblSleep:"睡眠影響",
+    lblReasons:"判定原因",
+    lblNote:"備註",
+    noteText:"本工具僅供追蹤參考；醫療決策仍需臨床評估。",
+    axisY:"嚴重度（0–10）",
+    riskStable:"穩定",
+    riskMild:"輕微",
+    riskStableMild:"穩定／輕微",
+demoFoot: "僅 Demo。實際上線請依院內核准版本調整門檻、聯絡資訊與同意書文字。",
+    visitDate:"回報日期",
+    dateHint:"以本地日期保存（YYYY-MM-DD），不會少一天。",
+    exportCSV:"趨勢數據輸出(CSV)",
+    exportPDF:"列印此次評估與趨勢數據(PDF)",
+    exportCopy:"複製此次評估摘要",
+    exportPDFPrint:"列印此次評估與趨勢數據(PDF)"
+}
+};
+
+const STORE_KEY = "nm_demo_v1";
+
+/* -------------------------
+   Demo state
+-------------------------- */
+let state = loadState() || seedState();
+let lang = state.lang || "en";
+let mode = state.mode || "patient"; // patient | care
+let route = state.route || "consent"; // consent | home | checkin | result | trends | summary | care
+let checkinStep = state.checkinStep || 1;
+
+function seedState(){
+  const now = new Date();
+  const weeks = [];
+  // seed 7 past weeks scores
+  let base = 2.0;
+  for(let i=7;i>=1;i--){
+    const d = new Date(now);
+    d.setDate(now.getDate() - i*7);
+    // mild upward trend
+    base = Math.min(7, Math.max(0, base + (Math.random()*0.9 - 0.2)));
+    weeks.push({
+      date: toYMD(d),
+      numb: clamp(round(base + (Math.random()*1.2-0.6),1),0,10),
+      ting: clamp(round(base + (Math.random()*1.2-0.6),1),0,10),
+      pain: clamp(round(base + (Math.random()*1.2-0.6),1),0,10),
+      impact: clamp(round(base + (Math.random()*1.2-0.6),1),0,10),
+      pnqSensory: "B",
+      pnqMotor: "A",
+      fall: false,
+      sleep: clamp(round(2 + Math.random()*2,1),0,10),
+      rag: "green",
+      reasons: ["stable"]
+    });
+  }
+  const profile = { therapy: "EV + chemotherapy", nextDue: toYMD(nextDueDate(now)) };
+  const last = weeks[weeks.length-1];
+  last.rag = computeRAG(last).rag;
+  last.reasons = computeRAG(last).reasons;
+  return {
+    lang:"en", mode:"patient", route:"consent",
+    profile,
+    weeks,
+    draft: { visitDate: toYMD(now), pnqSensory:null, pnqMotor:null, numb:2, ting:2, pain:2, impact:2, fall:false, sleep:2 },
+    checkinStep:1,
+    care: {
+      contacts: { phone:"+886-2-0000-0000", line:"@careteam-demo", office:"Mon–Fri 09:00–17:00" },
+      patients: [
+        { id:"P-1027", name:"Patient A", therapy:"EV", rag:"yellow", last: weeks[weeks.length-1].date },
+        { id:"P-2044", name:"Patient B", therapy:"Taxane", rag:"green", last: weeks[weeks.length-2].date },
+        { id:"P-3091", name:"Patient C", therapy:"Platinum", rag:"red", last: weeks[weeks.length-3].date }
+      ]
+    }
+  };
+}
+
+function saveState(){
+  state.lang = lang; state.mode = mode; state.route = route; state.checkinStep = checkinStep;
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function resetDemo(){
+  localStorage.removeItem(STORE_KEY);
+  state = seedState();
+  lang = "en"; mode="patient"; route="consent"; checkinStep=1;
+  toast("Reset");
+  render();
+}
+function setLang(l){
+  lang = l; saveState(); render();
+}
+function setMode(m){
+  mode = m;
+  document.getElementById("modePatient").classList.toggle("active", m==="patient");
+  document.getElementById("modeCare").classList.toggle("active", m==="care");
+  route = (m==="care") ? "care" : (state.route && state.route!=="care" ? state.route : "home");
+  saveState(); render();
+}
+function goto(r){
+  route = r;
+  if(mode==="care") route="care";
+  saveState();
+  render();
+}
+
+function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+function round(x,d){ const p=Math.pow(10,d); return Math.round(x*p)/p; }
+function toYMD(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function todayYMD(){ return toYMD(new Date()); }
+
+function fmtDate(isoOrYmd){
+  // Accept:
+  // - "YYYY-MM-DD"
+  // - full ISO string "YYYY-MM-DDTHH:mm:ssZ"
+  // Avoid UTC shift by constructing a local Date from Y/M/D.
+  const s = String(isoOrYmd || "").trim();
+  const ymd = s.includes("T") ? s.slice(0,10) : s;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if(m){
+    const y = Number(m[1]), mo = Number(m[2])-1, da = Number(m[3]);
+    const d = new Date(y, mo, da); // local midnight
+    const opt = { year:"numeric", month:"short", day:"2-digit" };
+    return d.toLocaleDateString(lang==="zh" ? "zh-TW" : "en-US", opt);
+  }
+  // fallback
+  try{
+    const d = new Date(s);
+    const opt = { year:"numeric", month:"short", day:"2-digit" };
+    return d.toLocaleDateString(lang==="zh" ? "zh-TW" : "en-US", opt);
+  }catch(e){
+    return s;
+  }
+}
+
+function nextDueDate(now){
+  const d = new Date(now);
+  d.setDate(d.getDate()+7);
+  return d;
+}
+
+/* -------------------------
+   Risk engine (transparent rules)
+-------------------------- */
+function computeRAG(entry, prev){
+  const reasons=[];
+  const red = (
+    entry.pain>=7 ||
+    entry.numb>=8 ||
+    entry.ting>=8 ||
+    entry.impact>=6 ||
+    entry.fall===true ||
+    (prev && (
+      (entry.pain - prev.pain)>=3 ||
+      (entry.numb - prev.numb)>=3 ||
+      (entry.ting - prev.ting)>=3 ||
+      (entry.impact - prev.impact)>=3
+    )) ||
+    entry.pnqSensory==="D" || entry.pnqSensory==="E" ||
+    entry.pnqMotor==="D" || entry.pnqMotor==="E"
+  );
+  const yellow = (
+    entry.pain>=4 || entry.numb>=4 || entry.ting>=4 || entry.impact>=4 ||
+    (prev && (
+      (entry.pain - prev.pain)>=2 ||
+      (entry.numb - prev.numb)>=2 ||
+      (entry.ting - prev.ting)>=2 ||
+      (entry.impact - prev.impact)>=2
+    )) ||
+    entry.pnqSensory==="C" || entry.pnqMotor==="C"
+  );
+
+  if(red){
+    if(entry.pain>=7) reasons.push("pain ≥ 7");
+    if(entry.numb>=8) reasons.push("numbness ≥ 8");
+    if(entry.ting>=8) reasons.push("tingling ≥ 8");
+    if(entry.impact>=6) reasons.push("impact ≥ 6");
+    if(entry.fall) reasons.push("fall / near-fall");
+    if(prev){
+      if(entry.pain-prev.pain>=3) reasons.push("pain ↑ ≥ 3");
+      if(entry.numb-prev.numb>=3) reasons.push("numbness ↑ ≥ 3");
+      if(entry.ting-prev.ting>=3) reasons.push("tingling ↑ ≥ 3");
+      if(entry.impact-prev.impact>=3) reasons.push("impact ↑ ≥ 3");
+    }
+    if(["D","E"].includes(entry.pnqSensory)) reasons.push("PNQ sensory D/E");
+    if(["D","E"].includes(entry.pnqMotor)) reasons.push("PNQ motor D/E");
+    return { rag:"red", reasons };
+  }
+  if(yellow){
+    if(entry.pain>=4) reasons.push("pain ≥ 4");
+    if(entry.numb>=4) reasons.push("numbness ≥ 4");
+    if(entry.ting>=4) reasons.push("tingling ≥ 4");
+    if(entry.impact>=4) reasons.push("impact ≥ 4");
+    if(prev){
+      if(entry.pain-prev.pain>=2) reasons.push("pain ↑ ≥ 2");
+      if(entry.numb-prev.numb>=2) reasons.push("numbness ↑ ≥ 2");
+      if(entry.ting-prev.ting>=2) reasons.push("tingling ↑ ≥ 2");
+      if(entry.impact-prev.impact>=2) reasons.push("impact ↑ ≥ 2");
+    }
+    if(entry.pnqSensory==="C") reasons.push("PNQ sensory C");
+    if(entry.pnqMotor==="C") reasons.push("PNQ motor C");
+    return { rag:"yellow", reasons };
+  }
+  reasons.push("stable / mild");
+  return { rag:"green", reasons };
+}
+
+function ragBadge(r){
+  const t=T[lang];
+  if(r==="green") return `<span class="badge ok">${t.green}</span>`;
+  if(r==="yellow") return `<span class="badge warn">${t.yellow}</span>`;
+  return `<span class="badge bad">${t.red}</span>`;
+}
+function trReason(s){
+  const t=T[lang];
+  const x=String(s||"").trim();
+  if(lang==="zh"){
+    if(x==="stable") return t.riskStable || "穩定";
+    if(x==="mild") return t.riskMild || "輕微";
+    if(x==="stable / mild" || x==="stable/mild") return t.riskStableMild || "穩定／輕微";
+    return x
+      .replaceAll("fall / near-fall","跌倒／差點跌倒")
+      .replaceAll("PNQ sensory D/E","PNQ 感覺 D/E")
+      .replaceAll("PNQ motor D/E","PNQ 運動 D/E")
+      .replaceAll("PNQ sensory D","PNQ 感覺 D")
+      .replaceAll("PNQ motor D","PNQ 運動 D")
+      .replaceAll("PNQ sensory C","PNQ 感覺 C")
+      .replaceAll("PNQ motor C","PNQ 運動 C");
+  }
+  // EN
+  if(x==="穩定") return "stable";
+  if(x==="輕微") return "mild";
+  if(x==="穩定／輕微") return "stable / mild";
+  return x;
+}
+function formatReasons(arr){
+  const a = Array.isArray(arr) ? arr : [];
+  return a.map(trReason).join(", ");
+}
+
+function ragLabel(r){
+  const t=T[lang];
+  if(r==="green") return t.green;
+  if(r==="yellow") return t.yellow;
+  return t.red;
+}
+function ragSuggestion(r){
+  const t=T[lang];
+  if(r==="green") return t.suggGreen;
+  if(r==="yellow") return t.suggYellow;
+  return t.suggRed;
+}
+
+/* -------------------------
+   UI helpers
+-------------------------- */
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg;
+  el.style.display="block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>{el.style.display="none";}, 1600);
+}
+
+function headerActions(){
+  const t=T[lang];
+  document.getElementById("subtitle").textContent = t.subtitle;
+  document.getElementById("resetLabel").textContent = t.reset;
+  document.getElementById("langEN").classList.toggle("active", lang==="en");
+  document.getElementById("langZH").classList.toggle("active", lang==="zh");
+  document.getElementById("modePatient").classList.toggle("active", mode==="patient");
+  document.getElementById("modeCare").classList.toggle("active", mode==="care");
+}
+
+/* -------------------------
+   Screens
+-------------------------- */
+function screenConsent(){
+  const t=T[lang];
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.consentTitle}</h1>
+      <p>${t.consentBody}</p>
+      <div class="divider"></div>
+      <p><b>${t.consentSafety}</b></p>
+      <div class="row2" style="margin-top:12px">
+        <button class="btn primary" onclick="agreeConsent()">${t.consentAgree}</button>
+      </div>
+      <div class="footerNote">${t.demoFoot}</div>
+    </div>
+
+    <div class="card">
+      <h2>${T[lang].demoHelpTitle}</h2>
+      <p class="small">
+        <pre class="hint" style="white-space:pre-wrap;margin:8px 0 0;color:#475569;">${T[lang].demoHelpBullets}</pre>
+      </p>
+      <div class="divider"></div>
+      <p class="small muted">
+        ${T[lang].demoHelpTip}
+      </p>
+    </div>
+  </div>`;
+}
+function agreeConsent(){
+  route="home";
+  saveState();
+  render();
+}
+
+function screenHome(){
+  const t=T[lang];
+  const last = state.weeks[state.weeks.length-1];
+  const now = new Date();
+  const due = true; // demo: always due
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.homeTitle}</h1>
+      <div class="kpi" style="margin-top:10px">
+        <div class="mini">
+          <div class="v">${due ? "✅" : "⏳"} ${due ? t.due : t.notDue}</div>
+          <div class="l">${fmtDate(todayYMD())}</div>
+        </div>
+        <div class="mini">
+          <div class="v">${ragBadge(last.rag)}</div>
+          <div class="l">${t.lastUpdated}: ${fmtDate(last.date)}</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <h2>${t.quickStatus}</h2>
+      <p><b>${t.suggestion}:</b> ${ragSuggestion(last.rag)}</p>
+
+      <div class="row2" style="margin-top:12px">
+        <button class="btn primary" onclick="startCheckin()">${t.startCheckin}</button>
+        <button class="btn" onclick="goto('trends')">${t.goTrends}</button>
+        <button class="btn" onclick="goto('summary')">${t.goSummary}</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>${t.tipsTitle}</h2>
+      <div class="list">
+        ${t.tips.map(x=>`<div class="item"><div class="left"><div class="title">${x}</div></div><div class="chip gray">Tip</div></div>`).join("")}
+      </div>
+      <div class="divider"></div>
+      <div class="small muted">Therapy: ${state.profile.therapy}</div>
+    </div>
+  </div>`;
+}
+function startCheckin(){
+  checkinStep=1;
+  state.draft = { pnqSensory:null, pnqMotor:null, numb:2, ting:2, pain:2, impact:2, fall:false, sleep:2 };
+  route="checkin";
+  saveState();
+  render();
+}
+
+function stepDots(){
+  const total=5;
+  let dots="";
+  for(let i=1;i<=total;i++){
+    dots += `<div class="dot ${i<=checkinStep ? "on":""}"></div>`;
+  }
+  return `<div class="stepper">${dots}<span class="small muted">${T[lang].step} ${checkinStep}/5</span></div>`;
+}
+
+function pnqChoice(letter, title, sub, selected, onClick){
+  return `
+  <div class="choice ${selected ? "selected":""}" onclick="${onClick}">
+    <div>
+      <div class="cTitle">${title}</div>
+      <div class="cSub">${sub}</div>
+    </div>
+    <div class="chip">${letter}</div>
+  </div>`;
+}
+
+function screenCheckin(){
+  const t=T[lang];
+  const d=state.draft;
+  const titleMap = {1:t.step1,2:t.step2,3:t.step3,4:t.step4,5:t.step5};
+  return `
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="align-items:flex-start">
+        <div>
+          <h1>${t.checkinTitle}</h1>
+          <p>${titleMap[checkinStep]}</p>
+        </div>
+        ${stepDots()}
+      </div>
+      <div class="divider"></div>
+      ${visitDateField()}
+      ${checkinStep===1 ? stepPNQSensory() : ""}
+      ${checkinStep===2 ? stepPNQMotor() : ""}
+      ${checkinStep===3 ? stepSliders() : ""}
+      ${checkinStep===4 ? stepSafety() : ""}
+      ${checkinStep===5 ? stepReview() : ""}
+
+      <div class="divider"></div>
+      <div class="row2">
+        <button class="btn" onclick="prevStep()">${t.back}</button>
+        ${checkinStep<5
+          ? `<button class="btn primary" onclick="nextStep()">${t.next}</button>`
+          : `<button class="btn primary" onclick="submitCheckin()">${t.submit}</button>`
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>PNQ in this demo</h2>
+      <p class="small muted">
+        PNQ = Patient Neurotoxicity Questionnaire. Here we use a patient-friendly wording to keep the demo short.
+      </p>
+      <div class="divider"></div>
+      <p class="small muted">
+        Note: A real product should use your institution’s validated wording and approved translation.
+      </p>
+      <div class="footerNote">${t.demoFoot}</div>
+    </div>
+  </div>`;
+}
+
+function stepPNQSensory(){
+  const t=T[lang];
+  const d=state.draft;
+  const letters=["A","B","C","D","E"];
+  const titles=[t.pnqA,t.pnqB,t.pnqC,t.pnqD,t.pnqE];
+  const subs=t.pnqSensorySub;
+  return `
+    <div class="field">
+      <label>${t.pnqPromptSensory}</label>
+      <div class="choices" style="margin-top:10px">
+        ${letters.map((L,i)=>pnqChoice(L, titles[i], subs[i], d.pnqSensory===L, `setDraft('pnqSensory','${L}')`)).join("")}
+      </div>
+      <div class="hint">${d.pnqSensory? "Selected: "+d.pnqSensory : "${T[lang].pickOne}"}</div>
+    </div>`;
+}
+function stepPNQMotor(){
+  const t=T[lang];
+  const d=state.draft;
+  const letters=["A","B","C","D","E"];
+  const titles=[t.pnqA,t.pnqB,t.pnqC,t.pnqD,t.pnqE];
+  const subs=t.pnqMotorSub;
+  return `
+    <div class="field">
+      <label>${t.pnqPromptMotor}</label>
+      <div class="choices" style="margin-top:10px">
+        ${letters.map((L,i)=>pnqChoice(L, titles[i], subs[i], d.pnqMotor===L, `setDraft('pnqMotor','${L}')`)).join("")}
+      </div>
+      <div class="hint">${d.pnqMotor? "Selected: "+d.pnqMotor : "${T[lang].pickOne}"}</div>
+    </div>`;
+}
+function sliderField(key, label, hint){
+  const d=state.draft;
+  return `
+    <div class="field">
+      <label>${label}</label>
+      ${hint ? `<div class="hint">${hint}</div>` : ""}
+      <div class="sliderRow">
+        <input type="range" min="0" max="10" step="1" value="${d[key]}" oninput="setDraft('${key}', parseInt(this.value,10))"/>
+        <div class="val">${d[key]}</div>
+      </div>
+    </div>`;
+}
+function stepSliders(){
+  const t=T[lang];
+  return `
+    <div class="form">
+      <div class="field">
+        <label>${t.slidersTitle}</label>
+        <div class="hint">${t.legend}</div>
+      </div>
+      ${sliderField("numb", t.numb)}
+      ${sliderField("ting", t.ting)}
+      ${sliderField("pain", t.pain)}
+      ${sliderField("impact", t.interfere, t.interfereHint)}
+    </div>`;
+}
+function stepSafety(){
+  const t=T[lang];
+  const d=state.draft;
+  return `
+    <div class="form">
+      <div class="field">
+        <label>${t.safetyTitle}</label>
+        <div class="hint">${t.contactHint}</div>
+      </div>
+      <div class="field">
+        <label>${t.fallQ}</label>
+        <div class="row2" style="margin-top:10px">
+          <button class="btn ${d.fall? "primary":""}" onclick="setDraft('fall', true)">${t.yes}</button>
+          <button class="btn ${!d.fall? "primary":""}" onclick="setDraft('fall', false)">${t.no}</button>
+        </div>
+      </div>
+      ${sliderField("sleep", t.sleepQ)}
+    </div>`;
+}
+function stepReview(){
+  const t=T[lang];
+  const d=state.draft;
+  const preview = computeRAG({
+    ...d,
+    date: getVisitDate()
+  }, state.weeks[state.weeks.length-1]);
+
+  return `
+    <div class="field">
+      <label>${t.reviewTitle}</label>
+      <div class="divider"></div>
+      <div class="item">
+        <div class="left">
+          <div class="title">${t.pnq} — Sensory: ${d.pnqSensory || "-"}</div>
+          <div class="sub">${t.pnq} — Motor: ${d.pnqMotor || "-"}</div>
+        </div>
+        ${ragBadge(preview.rag)}
+      </div>
+
+      <div class="divider"></div>
+      <div class="kpi">
+        <div class="mini"><div class="v">${d.numb}</div><div class="l">${t.numb}</div></div>
+        <div class="mini"><div class="v">${d.ting}</div><div class="l">${t.ting}</div></div>
+        <div class="mini"><div class="v">${d.pain}</div><div class="l">${t.pain}</div></div>
+        <div class="mini"><div class="v">${d.impact}</div><div class="l">${t.interfere}</div></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="small"><b>${t.why}:</b> ${preview.reasons.join(", ")}</div>
+    </div>`;
+}
+
+function setDraft(key,val){
+  state.draft[key]=val;
+  saveState();
+  render();
+}
+
+
+function visitDateField(){
+  const t=T[lang];
+  const d=state.draft;
+  const v = (d.visitDate && String(d.visitDate).slice(0,10)) || todayYMD();
+  return `
+    <div class="field">
+      <label>${t.visitDate || "Visit date"}</label>
+      <input class="input" type="date" value="${v}" onchange="setDraftDate(this.value)" />
+      <div class="hint">${t.dateHint || "Saved as local date (YYYY-MM-DD). No timezone shift."}</div>
+    </div>`;
+}
+function setDraftDate(v){
+  // Store local date as YYYY-MM-DD (no timezone shift).
+  let ymd = "";
+  if(v instanceof Date && !isNaN(v)){
+    ymd = toYMD(v);
+  }else{
+    const s = String(v || "").trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(s)) ymd = s;
+    else if(s.includes("T") && /^\d{4}-\d{2}-\d{2}$/.test(s.slice(0,10))) ymd = s.slice(0,10);
+  }
+  state.draft.visitDate = ymd || todayYMD();
+  saveState();
+}
+function getVisitDate(){
+  const v = state.draft && state.draft.visitDate ? String(state.draft.visitDate).slice(0,10) : "";
+  return (/^\d{4}-\d{2}-\d{2}$/.test(v) ? v : todayYMD());
+}
+
+
+function nextStep(){
+  // basic validation for PNQ steps
+  if(checkinStep===1 && !state.draft.pnqSensory){ toast(lang==="zh" ? "請先選 PNQ 感覺選項" : "Please select PNQ sensory option"); return; }
+  if(checkinStep===2 && !state.draft.pnqMotor){ toast(lang==="zh" ? "請先選 PNQ 動作選項" : "Please select PNQ motor option"); return; }
+  checkinStep = Math.min(5, checkinStep+1);
+  saveState(); render();
+}
+function prevStep(){
+  if(checkinStep===1){ goto("home"); return; }
+  checkinStep = Math.max(1, checkinStep-1);
+  saveState(); render();
+}
+
+function submitCheckin(){
+  const d=state.draft;
+  const prev=state.weeks[state.weeks.length-1];
+  const entry = {
+    date: getVisitDate(),
+    numb: d.numb, ting: d.ting, pain: d.pain, impact: d.impact,
+    pnqSensory: d.pnqSensory, pnqMotor: d.pnqMotor,
+    fall: d.fall, sleep: d.sleep
+  };
+  const out = computeRAG(entry, prev);
+  entry.rag = out.rag;
+  entry.reasons = out.reasons;
+
+  state.weeks.push(entry);
+  // keep last 8
+  if(state.weeks.length>8) state.weeks = state.weeks.slice(state.weeks.length-8);
+
+  route="result";
+  saveState();
+  render();
+}
+
+function screenResult(){
+  const t=T[lang];
+  const last = state.weeks[state.weeks.length-1];
+  const c = state.care.contacts;
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.resultTitle}</h1>
+      <div style="margin-top:8px">${ragBadge(last.rag)}</div>
+      <p style="margin-top:10px"><b>${t.suggestion}:</b> ${ragSuggestion(last.rag)}</p>
+      <div class="divider"></div>
+      <div class="small"><b>${t.why}:</b> ${formatReasons(last.reasons)}</div>
+
+      <div class="divider"></div>
+      <div class="row2">
+        <button class="btn primary" onclick="goto('home')">${t.homeTitle}</button>
+        <button class="btn" onclick="goto('trends')">${t.goTrends}</button>
+        <button class="btn" onclick="goto('summary')">${t.goSummary}</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>${t.contact}</h2>
+      <div class="list">
+        <div class="item">
+          <div class="left">
+            <div class="title">Phone</div>
+            <div class="sub">${c.phone}</div>
+          </div>
+          <div class="chip">Call</div>
+        </div>
+        <div class="item">
+          <div class="left">
+            <div class="title">LINE</div>
+            <div class="sub">${c.line}</div>
+          </div>
+          <div class="chip">Chat</div>
+        </div>
+        <div class="item">
+          <div class="left">
+            <div class="title">${t.office}</div>
+            <div class="sub">${c.office}</div>
+          </div>
+          <div class="chip gray">Info</div>
+        </div>
+      </div>
+      <div class="footerNote">${t.consentSafety}</div>
+    </div>
+  </div>`;
+}
+
+function drawTrends(){
+  const canvas=document.getElementById("trendCanvas");
+  if(!canvas) return;
+  const ctx=canvas.getContext("2d");
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  canvas.width = Math.floor(w*devicePixelRatio);
+  canvas.height = Math.floor(h*devicePixelRatio);
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+
+  const t=T[lang];
+  const padL=46, padR=18, padT=18, padB=54;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#fff";
+  roundRect(ctx,0,0,w,h,16,true,false);
+
+  const data = state.weeks.slice().sort((a,b)=> String(a.date).localeCompare(String(b.date)));
+  if(!data.length){
+    ctx.fillStyle="#64748b";
+    ctx.font="12px ui-sans-serif, system-ui";
+    ctx.fillText("No data", padL, padT+14);
+    return;
+  }
+
+  ctx.strokeStyle="#e2e8f0";
+  ctx.lineWidth=1;
+  ctx.fillStyle="#64748b";
+  ctx.font="12px ui-sans-serif, system-ui";
+
+  const yTicks=[0,2,4,6,8,10];
+  yTicks.forEach(v=>{
+    const y = padT + (plotH*(1 - v/10));
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+plotW, y); ctx.stroke();
+    ctx.fillText(String(v), 14, y+4);
+  });
+
+  ctx.save();
+  ctx.translate(14, padT + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle="#64748b";
+  ctx.fillText(t.axisY || "Severity (0–10)", 0, 0);
+  ctx.restore();
+
+  const xs = data.map((d,i)=> padL + (plotW*(i/(data.length-1 || 1))));
+  const fmtShort = (ymd)=>{
+    const s = String(ymd||"");
+    const m = s.slice(5,7), d = s.slice(8,10);
+    if(!m || !d) return s.slice(0,10);
+    return `${parseInt(m,10)}/${parseInt(d,10)}`;
+  };
+
+  ctx.save();
+  ctx.fillStyle="#64748b";
+  ctx.font="10px ui-sans-serif, system-ui";
+  for(let i=0;i<data.length;i++){
+    const d = String(data[i].date||"").includes("T") ? String(data[i].date).slice(0,10) : String(data[i].date).slice(0,10);
+    const label = fmtShort(d);
+    const x = xs[i];
+    const y = padT+plotH+34;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-Math.PI/4);
+    ctx.fillText(label, -8, 0);
+    ctx.restore();
+  }
+  ctx.restore();
+
+  const keys=["numb","ting","pain","impact"];
+  const colors=["#2563eb","#16a34a","#ef4444","#f59e0b"];
+  keys.forEach((k,idx)=>{
+    ctx.strokeStyle=colors[idx];
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    data.forEach((d,i)=>{
+      const x = xs[i];
+      const y = padT + (plotH*(1 - ((Number(d[k])||0)/10)));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    ctx.fillStyle=colors[idx];
+    data.forEach((d,i)=>{
+      const x = xs[i];
+      const y = padT + (plotH*(1 - ((Number(d[k])||0)/10)));
+      ctx.beginPath(); ctx.arc(x,y,2.6,0,Math.PI*2); ctx.fill();
+    });
+  });
+
+  const items = [
+    {c:colors[0], label:t.lgNumb || "Numbness"},
+    {c:colors[1], label:t.lgTing || "Tingling"},
+    {c:colors[2], label:t.lgPain || "Pain"},
+    {c:colors[3], label:t.lgImpact || "Impact"},
+  ];
+  let lx = padL, ly = 10;
+  ctx.font="12px ui-sans-serif, system-ui";
+  items.forEach(it=>{
+    ctx.fillStyle=it.c; ctx.fillRect(lx, ly, 10, 10);
+    ctx.fillStyle="#0f172a"; ctx.fillText(it.label, lx+14, ly+10);
+    lx += 14 + ctx.measureText(it.label).width + 18;
+  });
+}
+
+function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+  if (typeof r === 'number') r = {tl:r,tr:r,br:r,bl:r};
+  ctx.beginPath();
+  ctx.moveTo(x+r.tl, y);
+  ctx.lineTo(x+w-r.tr, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r.tr);
+  ctx.lineTo(x+w, y+h-r.br);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r.br, y+h);
+  ctx.lineTo(x+r.bl, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r.bl);
+  ctx.lineTo(x, y+r.tl);
+  ctx.quadraticCurveTo(x, y, x+r.tl, y);
+  ctx.closePath();
+  if(fill){ ctx.fill(); }
+  if(stroke){ ctx.stroke(); }
+}
+
+function screenTrends(){
+  const t=T[lang];
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.trendsTitle}</h1>
+      <p>${t.legend}</p>
+      <canvas id="trendCanvas"></canvas>
+      <div class="divider"></div>
+      <div class="row2">
+        <button class="btn" onclick="goto('home')">${t.homeTitle}</button>
+        <button class="btn" onclick="goto('summary')">${t.goSummary}</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recent entries</h2>
+      <div class="list">
+        ${state.weeks.slice().reverse().slice(0,4).map(w=>`
+          <div class="item">
+            <div class="left">
+              <div class="title">${fmtDate(w.date)} • ${ragLabel(w.rag)}</div>
+              <div class="sub">PNQ S:${w.pnqSensory || "-"} / M:${w.pnqMotor || "-"} • N:${w.numb} T:${w.ting} P:${w.pain} I:${w.impact}</div>
+            </div>
+            <div class="chip ${w.rag==='green'?'ok':w.rag==='yellow'?'warn':'bad'}">${ragLabel(w.rag)}</div>
+          </div>`).join("")}
+      </div>
+      <div class="footerNote">${t.demoFoot}</div>
+    </div>
+  </div>`;
+}
+
+function buildSummaryText(){
+  const t=T[lang];
+  const last = state.weeks[state.weeks.length-1];
+  const prev = state.weeks.length>1 ? state.weeks[state.weeks.length-2] : null;
+  const delta = prev ? {
+    numb: last.numb-prev.numb, ting:last.ting-prev.ting, pain:last.pain-prev.pain, impact:last.impact-prev.impact
+  } : null;
+
+  const title = (lang==="zh") ? "周邊神經症狀自我評估摘要" : "Neuropathy Monitor — Self-Assessment Summary";
+  const pnqSens = last.pnqSensory || "-";
+  const pnqMot  = last.pnqMotor || "-";
+  const ynFall = last.fall ? (t.yes||"Yes") : (t.no||"No");
+
+  const lines=[];
+  lines.push(title);
+  lines.push(`${t.lblDate||"Date"}: ${fmtDate(last.date)}`);
+  lines.push(`${t.lblTherapy||"Therapy"}: ${state.profile.therapy}`);
+  lines.push(`${t.lblRiskLevel||"Risk level"}: ${ragLabel(last.rag)}`);
+  lines.push(`${t.lblPNQ||"PNQ"}: Sensory ${pnqSens}, Motor ${pnqMot}`);
+  lines.push(`${t.lblScores||"Scores (0–10)"}: ${(lang==="zh")?"麻木":"Numbness"} ${last.numb}, ${(lang==="zh")?"刺痛/麻刺":"Tingling"} ${last.ting}, ${(lang==="zh")?"疼痛":"Pain"} ${last.pain}, ${(lang==="zh")?"影響日常":"Impact"} ${last.impact}`);
+
+  if(delta){
+    lines.push(`${t.lblChange||"Change vs last week"}: N ${fmtSigned(delta.numb)} / T ${fmtSigned(delta.ting)} / P ${fmtSigned(delta.pain)} / I ${fmtSigned(delta.impact)}`);
+  }else{
+    lines.push(`${t.lblChange||"Change vs last week"}: -`);
+  }
+
+  lines.push(`${t.lblFall||"Fall/near-fall"}: ${ynFall}; ${t.lblSleep||"Sleep impact"}: ${last.sleep}`);
+  lines.push(`${t.lblReasons||"Reasons"}: ${formatReasons(last.reasons) || "-"}`);
+  lines.push(`${t.lblNote||"Note"}: ${t.noteText || "This is a monitoring tool; clinical assessment is required for medical decisions."}`);
+
+  return lines.join("\n");
+}
+function fmtSigned(x){
+  const n = Math.round(x*10)/10;
+  return (n>0? "+"+n : ""+n);
+}
+
+function screenSummary(){
+  const t=T[lang];
+  const text = buildSummaryText();
+  const last = state.weeks[state.weeks.length-1];
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.summaryTitle}</h1>
+      <p>${t.summaryNote}</p>
+      <div class="divider"></div>
+      <div class="field">
+        <label>${t.summaryTitle}</label>
+        <div class="hint">Text preview (demo)</div>
+        <pre style="white-space:pre-wrap; margin:10px 0 0; font-size:12px; color:#0f172a;">${escapeHtml(text)}</pre>
+      </div>
+      <div class="row2">
+  <button class="btn primary" onclick="copySummary()">${T[lang].exportCopy || T[lang].export}</button>
+  <button class="btn primary" onclick="exportPDF()">${T[lang].exportPDF}</button>
+  <button class="btn primary" onclick="exportCSV()">${T[lang].exportCSV}</button>
+</div>
+    </div>
+
+    <div class="card">
+      <h2>${t.resultTitle}</h2>
+      <div style="margin-top:8px">${ragBadge(last.rag)}</div>
+      <p><b>${t.suggestion}:</b> ${ragSuggestion(last.rag)}</p>
+      <div class="footerNote">${t.demoFoot}</div>
+    </div>
+  </div>`;
+}
+function escapeHtml(str){
+  return str.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+function downloadBlob(filename, mime, data){
+  const blob = new Blob([data], {type: mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+function exportCSV(){
+  const rows = state.weeks.slice().sort((a,b)=> String(a.date).localeCompare(String(b.date)));
+  const header = ["date","rag","pnqSensory","pnqMotor","numb","ting","pain","impact","fall","sleep","reasons"].join(",");
+  const body = rows.map(w=>[
+    String(w.date).includes("T") ? String(w.date).slice(0,10) : String(w.date).slice(0,10),
+    w.rag, w.pnqSensory||"", w.pnqMotor||"",
+    w.numb, w.ting, w.pain, w.impact,
+    w.fall?1:0, w.sleep,
+    (w.reasons||[]).join("|")
+  ].map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\r\n");
+  const csv = "\ufeff" + header + "\r\n" + body;
+  downloadBlob(`CIPN_trend_${todayYMD()}.csv`, "text/csv;charset=utf-8", csv);
+}
+
+function pdfEscape(s){
+  return String(s).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");
+}
+// Minimal, single-page PDF (Helvetica). Works offline without external libraries.
+function makeSimplePDF(title, lines){
+  const pageW = 612, pageH = 792;
+  const marginX = 54, topY = 760;
+  const titleSize = 14, fontSize = 10, leading = 14;
+
+  const content = [];
+  content.push("BT");
+  content.push(`/F1 ${titleSize} Tf`);
+  content.push(`${marginX} ${topY} Td`);
+  content.push(`(${pdfEscape(title||"CIPN Report")}) Tj`);
+  content.push("0 -22 Td");
+  content.push(`/F1 ${fontSize} Tf`);
+  (lines||[]).forEach(ln=>{
+    content.push(`(${pdfEscape(ln)}) Tj`);
+    content.push(`0 -${leading} Td`);
+  });
+  content.push("ET");
+  const stream = content.join("\n");
+
+  const objs = [];
+  const offsets = [];
+  function addObj(n, body){ objs.push([n, body]); }
+
+  addObj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+  addObj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+  addObj(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageW+" "+pageH+"] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>");
+  addObj(4, "<< /Length "+stream.length+" >>\nstream\n"+stream+"\nendstream");
+  addObj(5, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+
+  let pdf = "%PDF-1.4\n";
+  offsets[0] = 0;
+  objs.forEach(([n, body])=>{
+    offsets[n] = pdf.length;
+    pdf += `${n} 0 obj\n${body}\nendobj\n`;
+  });
+
+  const xrefStart = pdf.length;
+  const size = objs.length + 1;
+  pdf += `xref\n0 ${size}\n`;
+  pdf += "0000000000 65535 f \n";
+  for(let i=1;i<size;i++){
+    const off = String(offsets[i]||0).padStart(10,"0");
+    pdf += `${off} 00000 n \n`;
+  }
+  pdf += `trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+  return pdf;
+}
+
+
+
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
+}
+
+
+
+
+function b64ToBytes(b64){
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+  return out;
+}
+function strToBytes(s){
+  const out = new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++) out[i]=s.charCodeAt(i) & 0xff;
+  return out;
+}
+function concatBytes(arrs){
+  let total=0; arrs.forEach(a=>total+=a.length);
+  const out = new Uint8Array(total);
+  let o=0; arrs.forEach(a=>{ out.set(a,o); o+=a.length; });
+  return out;
+}
+function ascii(s){ return strToBytes(s); }
+
+function wrapText(ctx, text, x, y, maxW, lineH){
+  const words = String(text||"").split(/\s+/);
+  let line="";
+  for(let i=0;i<words.length;i++){
+    const test = line ? (line+" "+words[i]) : words[i];
+    if(ctx.measureText(test).width <= maxW){
+      line = test;
+    }else{
+      ctx.fillText(line, x, y);
+      y += lineH;
+      line = words[i];
+    }
+  }
+  if(line){ ctx.fillText(line, x, y); y += lineH; }
+  return y;
+}
+
+// Build a multi-page PDF where each page is an embedded JPEG image (DCTDecode).
+function makePDFWithJPEGPages(pages){
+  const pageW = 595.28, pageH = 841.89; // A4
+  const margin = 36;
+  const maxW = pageW - margin*2;
+  const maxH = pageH - margin*2;
+
+  const parts = [];
+  const offsets = [0];
+  function currentLen(){ return parts.reduce((acc,b)=>acc+b.length, 0); }
+  function addObj(n, bodyBytes){
+    offsets[n] = currentLen();
+    parts.push(ascii(`${n} 0 obj\n`));
+    parts.push(bodyBytes);
+    parts.push(ascii(`\nendobj\n`));
+  }
+
+  parts.push(ascii("%PDF-1.4\n"));
+
+  // Object numbering
+  // 1: catalog
+  // 2: pages root
+  // then for each page i:
+  // pageObj, imgObj, contentObj
+  let obj = 3;
+  const kids = [];
+  const pageObjs = [];
+
+  pages.forEach((p, i)=>{
+    const imgObj = obj+1;
+    const contObj = obj+2;
+    const pageObj = obj;
+
+    kids.push(`${pageObj} 0 R`);
+    pageObjs.push({pageObj, imgObj, contObj, p});
+
+    obj += 3;
+  });
+
+  addObj(1, ascii("<< /Type /Catalog /Pages 2 0 R >>"));
+  addObj(2, ascii(`<< /Type /Pages /Kids [${kids.join(" ")}] /Count ${pages.length} >>`));
+
+  // Page objects
+  pageObjs.forEach((it, idx)=>{
+    const p = it.p;
+    const scale = Math.min(maxW/p.w, maxH/p.h);
+    const drawW = p.w * scale;
+    const drawH = p.h * scale;
+    const x = (pageW - drawW)/2;
+    const y = (pageH - drawH)/2;
+
+    const contentStream = `q\n${drawW.toFixed(2)} 0 0 ${drawH.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+    const contentBytes = ascii(contentStream);
+
+    addObj(it.pageObj, ascii(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /XObject << /Im0 ${it.imgObj} 0 R >> >> /Contents ${it.contObj} 0 R >>`));
+    addObj(it.imgObj, concatBytes([
+      ascii(`<< /Type /XObject /Subtype /Image /Width ${Math.round(p.w)} /Height ${Math.round(p.h)} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpeg.length} >>\nstream\n`),
+      p.jpeg,
+      ascii("\nendstream")
+    ]));
+    addObj(it.contObj, concatBytes([
+      ascii(`<< /Length ${contentBytes.length} >>\nstream\n`),
+      contentBytes,
+      ascii("\nendstream")
+    ]));
+  });
+
+  const bodyBytes = concatBytes(parts);
+  const xrefStart = bodyBytes.length;
+  const size = (obj); // last obj id + 0
+  let xref = `xref\n0 ${size}\n0000000000 65535 f \n`;
+  for(let i=1;i<size;i++){
+    const off = String(offsets[i] || 0).padStart(10,"0");
+    xref += `${off} 00000 n \n`;
+  }
+  const trailer = `trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+  return concatBytes([bodyBytes, ascii(xref), ascii(trailer)]);
+}
+
+function renderPDFPages(){
+  const t = T[lang];
+  const rowsAll = state.weeks.slice().sort((a,b)=> String(a.date).localeCompare(String(b.date)));
+  const last = rowsAll[rowsAll.length-1] || {};
+  const prev = rowsAll.length>1 ? rowsAll[rowsAll.length-2] : null;
+
+  const delta = prev ? {
+    numb: last.numb-prev.numb, ting:last.ting-prev.ting, pain:last.pain-prev.pain, impact:last.impact-prev.impact
+  } : null;
+
+  const date = (typeof getVisitDate==="function" && getVisitDate()) ? getVisitDate() : (String(last.date||"").slice(0,10) || todayYMD());
+  const font = "system-ui, -apple-system, Segoe UI, Arial, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif";
+  const W = 1240, H = 1754;
+  const pages = [];
+
+  // table config (used in combined & table-only pages)
+  
+const cols = [
+  {k:"date", w:150, label:(lang==="zh")?"日期":"Date"},
+  {k:"pnq", w:170, label:(lang==="zh")?"PNQ":"PNQ"},
+  {k:"numb", w:110, label:(lang==="zh")?"麻木":"N"},
+  {k:"ting", w:110, label:(lang==="zh")?"刺痛":"T"},
+  {k:"pain", w:110, label:(lang==="zh")?"疼痛":"P"},
+  {k:"impact", w:120, label:(lang==="zh")?"影響":"I"},
+  {k:"sleep", w:120, label:(lang==="zh")?"睡眠":"Sleep"},
+  {k:"fall", w:110, label:(lang==="zh")?"跌倒":"Fall"},
+  {k:"rag", w:100, label:(lang==="zh")?"風險":"Risk"},
+];
+  const rowH = 34;
+  const tx = 70, tableW = 1100;
+
+  function drawTable(g, startY, rows){
+    // Header
+    g.fillStyle="#f1f5f9"; g.fillRect(tx,startY,tableW,rowH);
+    g.strokeStyle="#e2e8f0"; g.lineWidth=1; g.strokeRect(tx,startY,tableW,rowH);
+    g.font=`bold 14px ${font}`; g.fillStyle="#0f172a";
+    let x=tx;
+    cols.forEach(cn=>{
+      g.fillText(cn.label, x+10, startY+22);
+      x += cn.w;
+      g.beginPath(); g.moveTo(x,startY); g.lineTo(x,startY+rowH); g.stroke();
+    });
+
+    // rows
+    g.font=`14px ${font}`;
+    let y = startY + rowH;
+    rows.forEach((r, idx)=>{
+      g.fillStyle = (idx%2===0) ? "#ffffff" : "#fbfdff";
+      g.fillRect(tx,y,tableW,rowH);
+      g.strokeStyle="#e2e8f0"; g.strokeRect(tx,y,tableW,rowH);
+
+      x=tx; g.fillStyle="#0f172a";
+      const d = String(r.date||"").includes("T") ? String(r.date).slice(0,10) : String(r.date).slice(0,10);
+      const vals = {date:d, pnq:`S ${r.pnqSensory||'-'} / M ${r.pnqMotor||'-'}`, numb:r.numb??"", ting:r.ting??"", pain:r.pain??"", impact:r.impact??"", sleep:r.sleep??"", fall:(r.fall? (lang==='zh'?'是':'Yes') : (lang==='zh'?'否':'No')), rag:ragLabel(r.rag)};
+      cols.forEach(cn=>{
+        g.fillText(String(vals[cn.k]??""), x+10, y+22);
+        x += cn.w;
+        g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+rowH); g.stroke();
+      });
+
+      y += rowH;
+    });
+    return startY + rowH + rows.length*rowH;
+  }
+
+  // --- Try to combine summary + full table into ONE page if it fits ---
+  {
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const g=c.getContext("2d");
+    g.fillStyle="#fff"; g.fillRect(0,0,W,H);
+
+    // Title
+    g.fillStyle="#0f172a";
+    g.font=`bold 32px ${font}`;
+    g.fillText((lang==="zh")?"周邊神經症狀自我評估摘要":"Neuropathy Monitor — Self-Assessment Summary", 70, 90);
+
+    g.font=`16px ${font}`; g.fillStyle="#334155";
+    g.fillText(`${(lang==="zh")?"產生日期":"Generated"}: ${todayYMD()}    ${(lang==="zh")?"此次評估日期":"Assessment date"}: ${date}`, 70, 124);
+
+    // Compact key results box
+    const risk = (last.rag||"green").toUpperCase();
+    const score = (last.numb||0)+(last.ting||0)+(last.pain||0)+(last.impact||0);
+    const boxX=70, boxY=145, boxW=1100, boxH=140;
+    g.fillStyle="#f8fafc"; g.strokeStyle="#e2e8f0"; g.lineWidth=2;
+    g.fillRect(boxX, boxY, boxW, boxH); g.strokeRect(boxX, boxY, boxW, boxH);
+
+    g.fillStyle="#0f172a"; g.font=`bold 20px ${font}`;
+    g.fillText((lang==="zh")?"此次評估重點":"Key results", boxX+22, boxY+36);
+    g.font=`16px ${font}`; g.fillStyle="#334155";
+    g.fillText(`${t.lblRiskLevel||"Risk level"}: ${ragLabel(last.rag)} (${risk})`, boxX+22, boxY+68);
+    g.fillText(`${(lang==="zh")?"總分":"Total score"}: ${score} (0–40)`, boxX+22, boxY+94);
+    g.fillText(`${t.lblPNQ||"PNQ"}: Sensory ${last.pnqSensory||"-"}, Motor ${last.pnqMotor||"-"}`, boxX+22, boxY+120);
+
+    // Compact assessment summary lines
+    let y=310;
+    g.fillStyle="#0f172a"; g.font=`bold 18px ${font}`;
+    g.fillText((lang==="zh")?"此次評估摘要":"Assessment summary", 70, y);
+    y += 22;
+
+    g.font=`15px ${font}`; g.fillStyle="#0f172a";
+    const lines = [
+      `${t.lblDate||"Date"}: ${fmtDate(last.date)}`,
+      `${t.lblTherapy||"Therapy"}: ${state.profile.therapy}`,
+      `${t.lblScores||"Scores (0–10)"}: ${(lang==="zh")?"麻木":"Numbness"} ${last.numb}, ${(lang==="zh")?"刺痛/麻刺":"Tingling"} ${last.ting}, ${(lang==="zh")?"疼痛":"Pain"} ${last.pain}, ${(lang==="zh")?"影響日常":"Impact"} ${last.impact}`,
+      `${t.lblChange||"Change vs last week"}: ${delta ? `N ${fmtSigned(delta.numb)} / T ${fmtSigned(delta.ting)} / P ${fmtSigned(delta.pain)} / I ${fmtSigned(delta.impact)}` : "-"}`,
+      `${t.lblFall||"Fall/near-fall"}: ${last.fall ? (t.yes||"Yes") : (t.no||"No")}; ${t.lblSleep||"Sleep impact"}: ${last.sleep}`,
+      `${t.lblReasons||"Reasons"}: ${formatReasons(last.reasons) || "-"}`,
+    ];
+    lines.forEach(s=>{
+      y = wrapText(g, s, 70, y, 1100, 20);
+      y += 4;
+    });
+
+    g.fillStyle="#64748b"; g.font=`13px ${font}`;
+    y += 4;
+    y = wrapText(g, `${t.lblNote||"Note"}: ${t.noteText}`, 70, y, 1100, 18);
+
+    // Trend table header title
+    y += 18;
+    g.fillStyle="#0f172a"; g.font=`bold 18px ${font}`;
+    g.fillText((lang==="zh")?"趨勢數據（表格）":"Trend data (table)", 70, y);
+    y += 10;
+
+    // Determine how many rows fit
+    const bottomReserve = 60;
+    const avail = H - (y + 10) - bottomReserve;
+    const rowsFit = Math.floor((avail - rowH) / rowH); // minus header row
+    const canFitAll = rowsAll.length <= rowsFit;
+
+    if(canFitAll){
+      y = drawTable(g, y+10, rowsAll);
+
+      g.fillStyle="#94a3b8"; g.font=`12px ${font}`;
+      g.fillText((lang==="zh")?"此工具僅供自我追蹤參考，非診斷或治療依據。若症狀惡化請聯絡醫療團隊。"
+                            :"For self-tracking only; not for diagnosis or treatment. Contact your care team if symptoms worsen.",
+                70, H-24);
+
+      const b64 = c.toDataURL("image/jpeg", 0.82).split(",")[1];
+      pages.push({jpeg:b64ToBytes(b64), w:W, h:H});
+      return {pages, date};
+    }
+    // else: fall through to multi-page approach below
+  }
+
+  // --- Multi-page approach: Page 1 summary, Page 2..n full table paginated ---
+  // Page 1: full summary
+  {
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const g=c.getContext("2d");
+    g.fillStyle="#fff"; g.fillRect(0,0,W,H);
+
+    g.fillStyle="#0f172a";
+    g.font=`bold 34px ${font}`;
+    g.fillText((lang==="zh")?"周邊神經症狀自我評估摘要":"Neuropathy Monitor — Self-Assessment Summary", 70, 95);
+
+    g.font=`16px ${font}`;
+    g.fillStyle="#334155";
+    g.fillText(`${(lang==="zh")?"產生日期":"Generated"}: ${todayYMD()}    ${(lang==="zh")?"此次評估日期":"Assessment date"}: ${date}`, 70, 130);
+
+    const risk = (last.rag||"green").toUpperCase();
+    const score = (last.numb||0)+(last.ting||0)+(last.pain||0)+(last.impact||0);
+
+    const boxX=70, boxY=160, boxW=1100, boxH=170;
+    g.fillStyle="#f8fafc"; g.strokeStyle="#e2e8f0"; g.lineWidth=2;
+    g.fillRect(boxX, boxY, boxW, boxH); g.strokeRect(boxX, boxY, boxW, boxH);
+
+    g.fillStyle="#0f172a"; g.font=`bold 22px ${font}`;
+    g.fillText((lang==="zh")?"此次評估重點":"Key results", boxX+22, boxY+40);
+    g.font=`18px ${font}`; g.fillStyle="#334155";
+    g.fillText(`${t.lblRiskLevel||"Risk level"}: ${ragLabel(last.rag)} (${risk})`, boxX+22, boxY+80);
+    g.fillText(`${(lang==="zh")?"總分":"Total score"}: ${score}   (0–40)`, boxX+22, boxY+112);
+    g.fillText(`${t.lblPNQ||"PNQ"}: Sensory ${last.pnqSensory||"-"}, Motor ${last.pnqMotor||"-"}`, boxX+22, boxY+144);
+
+    let y=370;
+    g.fillStyle="#0f172a"; g.font=`bold 20px ${font}`;
+    g.fillText((lang==="zh")?"此次評估摘要":"Assessment summary", 70, y);
+    y += 28;
+
+    g.font=`16px ${font}`; g.fillStyle="#0f172a";
+    const lines = [
+      `${t.lblDate||"Date"}: ${fmtDate(last.date)}`,
+      `${t.lblTherapy||"Therapy"}: ${state.profile.therapy}`,
+      `${t.lblScores||"Scores (0–10)"}: ${(lang==="zh")?"麻木":"Numbness"} ${last.numb}, ${(lang==="zh")?"刺痛/麻刺":"Tingling"} ${last.ting}, ${(lang==="zh")?"疼痛":"Pain"} ${last.pain}, ${(lang==="zh")?"影響日常":"Impact"} ${last.impact}`,
+      `${t.lblChange||"Change vs last week"}: ${delta ? `N ${fmtSigned(delta.numb)} / T ${fmtSigned(delta.ting)} / P ${fmtSigned(delta.pain)} / I ${fmtSigned(delta.impact)}` : "-"}`,
+      `${t.lblFall||"Fall/near-fall"}: ${last.fall ? (t.yes||"Yes") : (t.no||"No")}; ${t.lblSleep||"Sleep impact"}: ${last.sleep}`,
+      `${t.lblReasons||"Reasons"}: ${formatReasons(last.reasons) || "-"}`,
+    ];
+    lines.forEach(s=>{
+      y = wrapText(g, s, 70, y, 1100, 22);
+      y += 6;
+    });
+
+    g.fillStyle="#64748b"; g.font=`14px ${font}`;
+    y += 10;
+    y = wrapText(g, `${t.lblNote||"Note"}: ${t.noteText}`, 70, y, 1100, 20);
+
+    g.fillStyle="#94a3b8"; g.font=`12px ${font}`;
+    g.fillText((lang==="zh")?"此工具僅供自我追蹤參考，非診斷或治療依據。若症狀惡化請聯絡醫療團隊。"
+                          :"For self-tracking only; not for diagnosis or treatment. Contact your care team if symptoms worsen.",
+              70, 1710);
+
+    const b64 = c.toDataURL("image/jpeg", 0.82).split(",")[1];
+    pages.push({jpeg:b64ToBytes(b64), w:W, h:H});
+  }
+
+  // Page 2..n: full trend table
+  {
+    const top=140;
+    const bottom=120;
+    const rowsPerPage = Math.floor((H - top - bottom - rowH) / rowH);
+    const totalPages = Math.max(1, Math.ceil(rowsAll.length / rowsPerPage));
+
+    for(let p=0;p<totalPages;p++){
+      const c=document.createElement("canvas"); c.width=W; c.height=H;
+      const g=c.getContext("2d");
+      g.fillStyle="#fff"; g.fillRect(0,0,W,H);
+
+      g.fillStyle="#0f172a"; g.font=`bold 28px ${font}`;
+      g.fillText((lang==="zh")?"趨勢數據（完整表格）":"Trend data (full table)", 70, 80);
+
+      g.fillStyle="#334155"; g.font=`16px ${font}`;
+      g.fillText(`${(lang==="zh")?"評估日期":"Assessment date"}: ${date}    ${(lang==="zh")?"頁":"Page"} ${p+1}/${totalPages}`, 70, 112);
+
+      const slice = rowsAll.slice(p*rowsPerPage, (p+1)*rowsPerPage);
+      drawTable(g, top, slice);
+
+      const b64 = c.toDataURL("image/jpeg", 0.82).split(",")[1];
+      pages.push({jpeg:b64ToBytes(b64), w:W, h:H});
+    }
+  }
+
+  return {pages, date};
+}
+
+function exportPDF(){
+  const r = renderPDFPages();
+  const pdfBytes = makePDFWithJPEGPages(r.pages);
+  downloadBlob(`CIPN_Assessment_${r.date}.pdf`, "application/pdf", pdfBytes);
+}
+
+function copySummary(){
+  const t=T[lang];
+  const text=buildSummaryText();
+  navigator.clipboard.writeText(text).then(()=>{
+    toast(t.copied);
+  }).catch(()=>toast("Copy failed"));
+}
+
+/* -------------------------
+   Care Dashboard
+-------------------------- */
+function screenCare(){
+  const t=T[lang];
+  const patients = state.care.patients;
+  return `
+  <div class="grid">
+    <div class="card">
+      <h1>${t.careTitle}</h1>
+      <p>${t.careSub}</p>
+      <div class="divider"></div>
+      <h2>${t.patients}</h2>
+      <div class="list">
+        ${patients.map(p=>`
+          <div class="item">
+            <div class="left">
+              <div class="title">${p.id} • ${p.name}</div>
+              <div class="sub">${p.therapy} • ${t.lastCheckin}: ${fmtDate(p.last)}</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center">
+              <div class="chip ${p.rag==='green'?'ok':p.rag==='yellow'?'warn':'bad'}">${ragLabel(p.rag)}</div>
+              <button class="btn" onclick="openPatient('${p.id}')">${t.view}</button>
+            </div>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <div class="card" id="careDetail">
+      ${careDetail(null)}
+      <div class="footerNote">${t.demoFoot}</div>
+    </div>
+  </div>`;
+}
+
+function openPatient(id){
+  const el=document.getElementById("careDetail");
+  if(!el) return;
+  el.innerHTML = careDetail(id) + `<div class="footerNote">${T[lang].demoFoot}</div>`;
+  // also show trends based on main patient data
+  setTimeout(drawTrends, 30);
+}
+
+function careDetail(id){
+  const t=T[lang];
+  if(!id){
+    return `<h2>${t.patientDetail}</h2><p class="muted small">Select a patient from the list to view details.</p>`;
+  }
+  // For demo, reuse same trend data
+  const last = state.weeks[state.weeks.length-1];
+  return `
+    <h2>${t.patientDetail}: ${id}</h2>
+    <div class="kpi" style="margin-top:10px">
+      <div class="mini"><div class="v">${ragBadge(last.rag)}</div><div class="l">${t.rag}</div></div>
+      <div class="mini"><div class="v">S:${last.pnqSensory} / M:${last.pnqMotor}</div><div class="l">${t.pnq}</div></div>
+    </div>
+    <div class="divider"></div>
+    <p class="small"><b>${t.lastCheckin}:</b> ${fmtDate(last.date)}</p>
+    <p class="small"><b>${t.notes}:</b> ${formatReasons(last.reasons)}</p>
+    <div class="divider"></div>
+    <canvas id="trendCanvas"></canvas>
+  `;
+}
+
+
+function shortcutsBar(){
+  if(mode!=="patient") return "";
+  return `
+    <div class="shortcuts">
+      <div class="left">
+        <div class="label">Demo shortcuts / 快速導覽</div>
+        <button class="btn small" onclick="goto('consent')">1 ${T[lang].navConsent}</button>
+        <button class="btn small" onclick="goto('home')">2 ${T[lang].navHome}</button>
+        <button class="btn small" onclick="startCheckin()">3 ${T[lang].navCheckin}</button>
+        <button class="btn small" onclick="goto('result')">4 ${T[lang].navResult}</button>
+        <button class="btn small" onclick="goto('trends')">5 ${T[lang].navTrends}</button>
+        <button class="btn small" onclick="goto('summary')">6 ${T[lang].navSummary}</button>
+      </div>
+      <div class="small muted">Tip: Home → “Start check-in” to see the full flow.</div>
+    </div>
+  `;
+}
+
+
+/* -------------------------
+   Router
+-------------------------- */
+function render(){
+  headerActions();
+  const t=T[lang];
+  const app=document.getElementById("app");
+  if(mode==="care"){
+    app.innerHTML = screenCare();
+    setTimeout(drawTrends, 30);
+    return;
+  }
+  if(route==="consent") app.innerHTML = shortcutsBar() + screenConsent();
+  else if(route==="home") app.innerHTML = shortcutsBar() + screenHome();
+  else if(route==="checkin") app.innerHTML = shortcutsBar() + screenCheckin();
+  else if(route==="result") app.innerHTML = shortcutsBar() + screenResult();
+  else if(route==="trends") { app.innerHTML = shortcutsBar() + screenTrends(); setTimeout(drawTrends, 30); }
+  else if(route==="summary") app.innerHTML = shortcutsBar() + screenSummary();
+  else app.innerHTML = shortcutsBar() + screenHome();
+}
+
+document.addEventListener('DOMContentLoaded', function(){ startupSelfCheck();
+  try{ render(); }catch(e){ throw e; } });
+</script>
+</body>
+</html>
